@@ -1,0 +1,27 @@
+{
+  "name": "libpsl",
+  "version": "0.21.2",
+  "description": "C library to handle the Public Suffix List",
+  "homepage": "https://github.com/rockdaboot/libpsl",
+  "license": "MIT",
+  "dependencies": [
+    {
+      "name": "vcpkg-tool-meson",
+      "host": true
+    }
+  ],
+  "features": {
+    "icu": {
+      "description": "Build with ICU support",
+	  "dependencies": [
+	    "icu"
+	  ]
+    },
+	"libidn2": {
+      "description": "Build with libidn2 support",
+	  "dependencies": [
+	    "libidn2"
+	  ]
+    }
+  }
+}

@@ -1,0 +1,13 @@
+diff --git a/meson.build b/meson.build
+index 00d84cb..f3c5dad 100644
+--- a/meson.build
++++ b/meson.build
+@@ -85,7 +85,7 @@ if libidn2_dep.found() or libidn_dep.found()
+   libiconv_dep = dependency('iconv')
+ endif
+ 
+-if host_machine.system() == 'windows'
++if host_machine.system() == 'windows' and cc.get_define('WINAPI_FAMILY') != 'WINAPI_FAMILY_APP'
+   networking_deps = cc.find_library('ws2_32')
+ endif
+ 

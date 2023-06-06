@@ -1,0 +1,16 @@
+diff --git a/src/psl.c b/src/psl.c
+index 6c9d904..09f419b 100644
+--- a/src/psl.c
++++ b/src/psl.c
+@@ -1542,7 +1542,11 @@ const char *psl_dist_filename(void)
+ const char *psl_get_version(void)
+ {
+ #ifdef WITH_LIBICU
++#ifdef U_ICU_VERSION
+ 	return PACKAGE_VERSION " (+libicu/" U_ICU_VERSION ")";
++#else
++	return PACKAGE_VERSION " (+libicu/system-based)"; /* TODO: use u_getVersion and u_versionToString to initialize a static char[] in a thread-safe way */
++#endif
+ #elif defined(WITH_LIBIDN2)
+ 	return PACKAGE_VERSION " (+libidn2/" IDN2_VERSION ")";
+ #elif defined(WITH_LIBIDN)
