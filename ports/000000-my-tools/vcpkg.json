@@ -1,0 +1,8 @@
+{
+  "name": "000000-my-tools",
+  "version-string": "1.0.0",
+  "description": "Download some tools",
+  "supports": "windows",
+  "dependencies": [
+  ]
+}
