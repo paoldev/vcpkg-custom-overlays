@@ -1,0 +1,42 @@
+{
+  "name": "icu",
+  "version": "72.1",
+  "port-version": 4,
+  "description": "Mature and widely used Unicode and localization library.",
+  "homepage": "https://icu.unicode.org/home",
+  "license": "ICU",
+  "dependencies": [
+    {
+      "name": "icu",
+      "host": true,
+      "features": [
+        "tools"
+      ],
+	  "platform": "!uwp"
+    },
+	{
+      "name": "icu",
+	  "features": [
+	    "ms-icu"
+	  ],
+	  "platform": "uwp"
+    }
+  ],
+  "features": {
+    "tools": {
+      "description": "Build tools"
+    },
+	"ms-icu": {
+      "description": "Use MS-ICU on Windows",
+	  "supports": "windows",
+	  "dependencies": [
+	    {
+          "name": "ms-icu",
+          "features": [
+            "dummyheaders"
+          ]
+        }
+	  ]
+    }
+  }
+}
