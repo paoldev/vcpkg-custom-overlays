@@ -1,0 +1,16 @@
+{
+  "name": "ms-icu",
+  "version": "0.0",
+  "port-version": 0,
+  "description": "Windows ICU.",
+  "license": null,
+  "supports": "windows",
+  "features": {
+    "forcelegacy": {
+      "description": "force legacy icui18n.h and icucommon.h headers"
+    },
+    "dummyheaders": {
+      "description": "generate dummy headers in include/unicode vcpkg installation folder."
+    }
+  }
+}
