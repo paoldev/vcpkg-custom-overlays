@@ -10,6 +10,7 @@ vcpkg_from_gitlab(
     PATCHES 0001-meson-fix-macOS-build-and-add-macOS-ci.patch
             cairo_static_fix.patch
             my-add-angle-gl-backend.patch  #my-change
+            my-optional-win32-feature.patch  #my-change
 )
 
 #my-change begin
