@@ -50,4 +50,5 @@ Usage example:
 
 # License
 
-This project is licensed under the terms of the MIT license: please see [./LICENSE](./LICENSE).
+This project is licensed under the terms of the [MIT license](./LICENSE). The libraries
+provided by ports are licensed under the terms of their original authors.
