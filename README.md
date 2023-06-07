@@ -17,15 +17,12 @@ Port to download some tools.
 
 Custom cairo port
 
-New feature:
-- **angle**: it adds 'angle' port as a new dependency for cairo; 'angle' is then mapped to GLESv2 gl-backend.  
-Usage example:  
-    > vcpkg install --overlay-ports path/to/vcpkg-custom-overlays/ports --triplet x64-windows cairo\[angle\]
-
 New platform:
 - **uwp**: it can be built on uwp, without exposing win32 cairo surface and font.  
 Usage example:  
     > vcpkg install --overlay-ports path/to/vcpkg-custom-overlays/ports --triplet x64-uwp cairo\[freetype\]
+
+**Note**: the custom **cairo\[angle\]** feature is no more available since the cairo 'gl-backend' has been removed upstream, starting from 'cairo 1.17.8' release.
 
 ### icu
 
