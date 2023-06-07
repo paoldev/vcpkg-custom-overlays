@@ -1,8 +1,8 @@
 diff --git a/meson.build b/meson.build
-index 204bee2..285d049 100644
+index 58ed0e3..1e2484b 100644
 --- a/meson.build
 +++ b/meson.build
-@@ -382,7 +382,16 @@ if host_machine.system() == 'darwin' and not get_option('quartz').disabled()
+@@ -485,7 +485,16 @@ if host_machine.system() == 'darwin' and not get_option('quartz').disabled()
    endif
  endif
  
@@ -21,28 +21,28 @@ index 204bee2..285d049 100644
      cc.find_library('gdi32'),
      cc.find_library('msimg32'),
 diff --git a/meson_options.txt b/meson_options.txt
-index 3ff94dc..a4d3dbd 100644
+index f55c3d5..1e74339 100644
 --- a/meson_options.txt
 +++ b/meson_options.txt
-@@ -16,6 +16,7 @@ option('png', type : 'feature', value : 'auto') # png and svg surfaces
+@@ -11,6 +11,7 @@ option('glesv3', type : 'feature', value : 'disabled')
+ option('png', type : 'feature', value : 'auto') # png and svg surfaces
  option('quartz', type : 'feature', value : 'auto')
- option('qt', type : 'feature', value : 'disabled')
  option('tee', type : 'feature', value : 'disabled')
 +option('win32', type : 'feature', value : 'auto')
  option('xcb', type : 'feature', value : 'auto')
  option('xlib', type : 'feature', value : 'auto')
- #option('xml', type : 'feature', value : 'disabled')
+ option('xlib-xcb', type : 'feature', value : 'disabled')
 diff --git a/src/meson.build b/src/meson.build
-index 5bd1a57..430bab0 100644
+index 612a3fc..50ba6da 100644
 --- a/src/meson.build
 +++ b/src/meson.build
-@@ -179,6 +179,9 @@ cairo_feature_sources = {
-   'cairo-win32-font': [
-     'win32/cairo-win32-font.c',
+@@ -181,6 +181,9 @@ cairo_feature_sources = {
+     'win32/cairo-dwrite-font-public.c',
+     'win32/cairo-dwrite-font.cpp',
    ],
 +  'cairo-win32-system-only': [
 +    'win32/cairo-win32-system.c',
 +  ],
-   'cairo-drm': [
-     'drm/cairo-drm.c',
-     'drm/cairo-drm-bo.c',
+   'cairo-gl': [
+     'cairo-gl-composite.c',
+     'cairo-gl-device.c',

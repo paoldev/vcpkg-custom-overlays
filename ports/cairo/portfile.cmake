@@ -4,19 +4,16 @@ vcpkg_from_gitlab(
     GITLAB_URL https://gitlab.freedesktop.org
     OUT_SOURCE_PATH SOURCE_PATH
     REPO cairo/cairo
-    REF 156cd3eaaebfd8635517c2baf61fcf3627ff7ec2 #v1.17.4
-    SHA512 2c516ad3ffe56cf646b2435d6ef3cf25e8c05aeb13d95dd18a7d0510d134d9990cba1b376063352ff99483cfc4e5d2af849afd2f9538f9136f22d44d34be362c
+    REF b43e7c6f3cf7855e16170a06d3a9c7234c60ca94 #v1.17.6
+    SHA512 2d8f0cbb11638610eda104a370bb8450e28d835852b0f861928738a60949e0aaba7a554a9f9efabbefda10a37616d4cd0d3021b3fbb4ced1d52db1edb49bc358
     HEAD_REF master
-    PATCHES 0001-meson-fix-macOS-build-and-add-macOS-ci.patch
-            cairo_static_fix.patch
+    PATCHES cairo_static_fix.patch
             my-add-angle-gl-backend.patch  #my-change
             my-optional-win32-feature.patch  #my-change
-            my-fix-uwp-build.patch  #my-change
 )
 
 #my-change begin
 if(VCPKG_TARGET_IS_UWP)
-    list(APPEND OPTIONS -Dboilerplate=disabled) #added by 'my-fix-uwp-build.patch'
     list(APPEND OPTIONS -Dwin32=disabled) #added by 'my-optional-win32-feature.patch'
     set(VCPKG_LINKER_FLAGS "${VCPKG_LINKER_FLAGS} WindowsApp.lib") #force WindowsApp.lib, to propagate it to meson 'find_library' tests.
 endif()
@@ -48,7 +45,7 @@ else()
     list(APPEND OPTIONS -Dxlib=disabled)
 endif()
 list(APPEND OPTIONS -Dxcb=disabled)
-#list(APPEND OPTIONS -Dxlib-xcb=disabled) don't forget this option with the next update!
+list(APPEND OPTIONS -Dxlib-xcb=disabled)
 
 if("gobject" IN_LIST FEATURES)
     if(VCPKG_TARGET_IS_WINDOWS AND VCPKG_LIBRARY_LINKAGE STREQUAL "static")
@@ -71,6 +68,7 @@ vcpkg_configure_meson(
         -Dpng=enabled
         -Dspectre=auto
         -Dgtk2-utils=disabled
+        -Dsymbol-lookup=disabled
 )
 vcpkg_install_meson()
 
