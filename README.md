@@ -13,6 +13,13 @@
 
 Port to download some tools.
 
+### cairo
+
+Custom cairo port to add **angle** feature, that is mapped to GLESv2 gl-backend.
+
+Usage example:
+> vcpkg install --overlay-ports path/to/vcpkg-custom-overlays/ports --triplet x64-windows cairo\[angle\]  
+
 ### icu
 
 Custom icu port with Windows SDK ICU support, for both windows-desktop and uwp platforms. It is a modification of the original vcpkg port found at <https://github.com/microsoft/vcpkg/tree/master/ports/icu>.
