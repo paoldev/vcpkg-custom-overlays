@@ -11,9 +11,16 @@ vcpkg_from_gitlab(
             cairo_static_fix.patch
             my-add-angle-gl-backend.patch  #my-change
             my-optional-win32-feature.patch  #my-change
+            my-fix-uwp-build.patch  #my-change
 )
 
 #my-change begin
+if(VCPKG_TARGET_IS_UWP)
+    list(APPEND OPTIONS -Dboilerplate=disabled) #added by 'my-fix-uwp-build.patch'
+    list(APPEND OPTIONS -Dwin32=disabled) #added by 'my-optional-win32-feature.patch'
+    set(VCPKG_LINKER_FLAGS "${VCPKG_LINKER_FLAGS} WindowsApp.lib") #force WindowsApp.lib, to propagate it to meson 'find_library' tests.
+endif()
+
 if("angle" IN_LIST FEATURES)
     list(APPEND OPTIONS -Dgl-backend=angle)
 endif()
