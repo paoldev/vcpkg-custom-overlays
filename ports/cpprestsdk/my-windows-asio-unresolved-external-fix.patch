@@ -1,0 +1,32 @@
+diff --git a/Release/src/CMakeLists.txt b/Release/src/CMakeLists.txt
+index 128f6d6..b8bdc08 100644
+--- a/Release/src/CMakeLists.txt
++++ b/Release/src/CMakeLists.txt
+@@ -106,7 +106,7 @@ elseif(CPPREST_PPLX_IMPL STREQUAL "linux")
+   endif()
+ elseif(CPPREST_PPLX_IMPL STREQUAL "win")
+   target_sources(cpprest PRIVATE pplx/pplxwin.cpp)
+-  if(CPPREST_WEBSOCKETS_IMPL STREQUAL "wspp")
++  if(CPPREST_WEBSOCKETS_IMPL STREQUAL "wspp" OR CPPREST_HTTP_CLIENT_IMPL STREQUAL "asio" OR CPPREST_HTTP_LISTENER_IMPL STREQUAL "asio")
+     target_sources(cpprest PRIVATE pplx/threadpool.cpp ../include/pplx/threadpool.h)
+     if(CPPREST_INSTALL_HEADERS)
+       install(FILES ../include/pplx/threadpool.h DESTINATION include/pplx)
+diff --git a/Release/src/pplx/threadpool.cpp b/Release/src/pplx/threadpool.cpp
+index ba38a1a..ade95cf 100644
+--- a/Release/src/pplx/threadpool.cpp
++++ b/Release/src/pplx/threadpool.cpp
+@@ -4,7 +4,7 @@
+  **/
+ #include "stdafx.h"
+ 
+-#if !defined(CPPREST_EXCLUDE_WEBSOCKETS) || !defined(_WIN32)
++#if !defined(_WIN32) || !defined(CPPREST_EXCLUDE_WEBSOCKETS) || defined(CPPREST_FORCE_HTTP_CLIENT_ASIO) || defined(CPPREST_FORCE_HTTP_LISTENER_ASIO)
+ #include "pplx/threadpool.h"
+ #include <boost/asio/detail/thread.hpp>
+ #include <new>
+@@ -232,4 +232,4 @@ std::unique_ptr<crossplat::threadpool> crossplat::threadpool::construct(size_t n
+ {
+     return std::unique_ptr<crossplat::threadpool>(new threadpool_impl(num_threads));
+ }
+-#endif //  !defined(CPPREST_EXCLUDE_WEBSOCKETS) || !defined(_WIN32)
++#endif //  !defined(_WIN32) || !defined(CPPREST_EXCLUDE_WEBSOCKETS) || defined(CPPREST_FORCE_HTTP_CLIENT_ASIO) || defined(CPPREST_FORCE_HTTP_LISTENER_ASIO)

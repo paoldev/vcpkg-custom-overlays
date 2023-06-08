@@ -1,11 +1,12 @@
 # vcpkg-custom-overlays
 
+This repository contains some custom ports I used / use for few projects of mine.
+
 ## How to install and use
 
 > 1. git clone https://github.com/paoldev/vcpkg-custom-overlays
 > 2. cd vcpkg
 > 3. vcpkg install --overlay-ports path/to/vcpkg-custom-overlays/ports --overlay-triplets path/to/vcpkg-custom-overlays/triplets --triplet [triplet to use] [packages to install]
-
 
 ## Ports
 
@@ -23,6 +24,14 @@ Usage example:
     > vcpkg install --overlay-ports path/to/vcpkg-custom-overlays/ports --triplet x64-uwp cairo\[freetype\]
 
 **Note**: the custom **cairo\[angle\]** feature is no more available since the cairo 'gl-backend' has been removed upstream, starting from 'cairo 1.17.8' release.
+
+### cpprestsdk
+
+Custom cpprestsdk port
+
+New feature:
+- **windows-asio**: add 'asio' support to windows platform.  
+It also contains the patch related to my PR <https://github.com/microsoft/cpprestsdk/pull/1466>, not integrated in main 'cpprestsdk' repository yet.
 
 ### icu
 
