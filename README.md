@@ -63,6 +63,51 @@ To use this port as a replacement of the "standard" icu port, the custom icu por
 Usage example:  
     > vcpkg install --overlay-ports path/to/vcpkg-custom-overlays/ports --triplet x64-windows my_icu_dependent_package icu\[ms-icu\]
 
+To use **icu\[ms-icu\]** outside of the vcpkg toolchain, probably a customized **FindICU.cmake** file has to be added to the project; for example  
+```
+#
+# my FindICU.cmake
+#
+find_package(PkgConfig QUIET)
+pkg_check_modules(PC_ICU REQUIRED QUIET icu-uc)
+
+#Ignore ICU_VERSION
+#set(ICU_VERSION ${PC_ICU_VERSION})
+
+set(ICU_INCLUDE_DIRS ${PC_ICU_INCLUDE_DIRS})
+set(ICU_LIBRARIES ${PC_ICU_LINK_LIBRARIES})
+
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(ICU
+    FOUND_VAR ICU_FOUND
+    REQUIRED_VARS ICU_LIBRARIES ICU_INCLUDE_DIRS
+    VERSION_VAR ICU_VERSION
+)
+
+foreach(_ICU_component ${ICU_FIND_COMPONENTS})
+  string(TOUPPER "${_ICU_component}" _ICU_component_upcase)
+  set(_ICU_component_cache "ICU_${_ICU_component_upcase}_LIBRARY")
+  set(_ICU_imported_target "ICU::${_ICU_component}")
+  if(NOT TARGET ${_ICU_imported_target})
+    add_library(${_ICU_imported_target} UNKNOWN IMPORTED)
+    set_target_properties(${_ICU_imported_target} PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${PC_ICU_INCLUDE_DIRS}")
+    foreach (lib ${PC_ICU_LINK_LIBRARIES})
+      #${PC_ICU_LINK_LIBRARIES} contains 2 libs at most (icuin and icuuc), in legacy mode.
+      if ("${_ICU_component}" MATCHES "in" AND "${lib}" MATCHES "icuin.Lib$")
+        set_target_properties(${_ICU_imported_target} PROPERTIES IMPORTED_LINK_INTERFACE_LANGUAGES "CXX" IMPORTED_LOCATION "${lib}")
+        set(${${_ICU_component_cache}} ${lib})
+      else()
+        set_target_properties(${_ICU_imported_target} PROPERTIES IMPORTED_LINK_INTERFACE_LANGUAGES "CXX" IMPORTED_LOCATION "${lib}")
+        set(${${_ICU_component_cache}} ${lib})
+      endif()
+    endforeach()
+  endif()
+endforeach()
+
+mark_as_advanced(ICU_INCLUDE_DIRS ICU_LIBRARIES)
+```
+
+
 ## Triplets
 
 - x64-windows-static-md-release
