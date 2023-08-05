@@ -1,0 +1,61 @@
+diff --git a/portfile.cmake b/portfile.cmake
+index c622dfd..27659cd 100644
+--- a/portfile.cmake
++++ b/portfile.cmake
+@@ -1,3 +1,11 @@
++#my-change begin
++if ("ms-icu" IN_LIST FEATURES)
++  set(VCPKG_POLICY_EMPTY_INCLUDE_FOLDER enabled)
++  configure_file("${CURRENT_PACKAGES_DIR}/../ms-icu_${TARGET_TRIPLET}/share/ms-icu/copyright" "${CURRENT_PACKAGES_DIR}/share/icu/copyright" COPYONLY)
++  return()
++endif()
++#my-change end
++
+ string(REGEX MATCH "^[0-9]*" ICU_VERSION_MAJOR "${VERSION}")
+ string(REPLACE "." "_" VERSION2 "${VERSION}")
+ string(REPLACE "." "-" VERSION3 "${VERSION}")
+diff --git a/vcpkg.json b/vcpkg.json
+index 88a574b..73ea31e 100644
+--- a/vcpkg.json
++++ b/vcpkg.json
+@@ -4,19 +4,38 @@
+   "description": "Mature and widely used Unicode and localization library.",
+   "homepage": "https://icu.unicode.org/home",
+   "license": "ICU",
+-  "supports": "!uwp",
+   "dependencies": [
+     {
+       "name": "icu",
+       "host": true,
+       "features": [
+         "tools"
+-      ]
++      ],
++	  "platform": "!uwp"
++    },
++	{
++      "name": "icu",
++	  "features": [
++	    "ms-icu"
++	  ],
++	  "platform": "uwp"
+     }
+   ],
+   "features": {
+     "tools": {
+       "description": "Build tools"
++    },
++	"ms-icu": {
++      "description": "Use MS-ICU on Windows",
++	  "supports": "windows",
++	  "dependencies": [
++	    {
++          "name": "ms-icu",
++          "features": [
++            "dummyheaders"
++          ]
++        }
++	  ]
+     }
+   }
+ }
