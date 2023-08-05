@@ -1,4 +1,3 @@
-
 if(VCPKG_TARGET_IS_WINDOWS AND NOT VCPKG_TARGET_IS_MINGW)
     set(PATCHES fix_clang-cl_build.patch)
 endif()
@@ -7,7 +6,7 @@ vcpkg_from_gitlab(
     OUT_SOURCE_PATH SOURCE_PATH
     GITLAB_URL https://gitlab.freedesktop.org
     REPO cairo/cairo
-    REF ${VERSION}
+    REF "${VERSION}"
     SHA512 e12f4b05326c1ac7d930e18d95398dc9c65f3af9745d7fd301ef1663dd378feeb43acc47de17fd082d0acf96e9fc60310557c24e3fe8af06d17931590c7759c6
     PATCHES
         cairo_static_fix.patch
@@ -20,8 +19,10 @@ vcpkg_from_gitlab(
 
 #my-change begin
 if(VCPKG_TARGET_IS_UWP)
-    list(APPEND OPTIONS -Dwin32=disabled) #added by 'my-optional-win32-feature.patch'
-    set(VCPKG_LINKER_FLAGS "${VCPKG_LINKER_FLAGS} WindowsApp.lib") #force WindowsApp.lib, to propagate it to meson 'find_library' tests.
+    #disable gdi and dwrite stuff: feature added by 'my-optional-win32-feature.patch'
+    list(APPEND OPTIONS -Dwin32=disabled)
+    #inject WindowsApp.lib, to fix meson 'cc.links()' tests (see errors in config-x64-uwp-debug-meson-log.txt.log).
+    set(VCPKG_LINKER_FLAGS "${VCPKG_LINKER_FLAGS} WindowsApp.lib")
 endif()
 #my-change end
 
@@ -58,7 +59,8 @@ endif()
 
 vcpkg_configure_meson(
     SOURCE_PATH "${SOURCE_PATH}"
-    OPTIONS ${OPTIONS}
+    OPTIONS
+        ${OPTIONS}
         -Dtests=disabled
         -Dzlib=enabled
         -Dpng=enabled
@@ -93,5 +95,6 @@ if(VCPKG_LIBRARY_LINKAGE STREQUAL "static")
     file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/bin" "${CURRENT_PACKAGES_DIR}/debug/bin")
 endif()
 
+file(INSTALL "${CMAKE_CURRENT_LIST_DIR}/usage" DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}")
 # Handle copyright
-vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/COPYING")
+vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/COPYING" "${SOURCE_PATH}/COPYING-LGPL-2.1" "${SOURCE_PATH}/COPYING-MPL-1.1")

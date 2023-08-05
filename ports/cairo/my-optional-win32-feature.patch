@@ -1,8 +1,8 @@
 diff --git a/meson.build b/meson.build
-index 2609dc0..886296c 100644
+index 12512d1..099d916 100644
 --- a/meson.build
 +++ b/meson.build
-@@ -498,7 +498,16 @@ if host_machine.system() == 'darwin' and not get_option('quartz').disabled()
+@@ -491,7 +491,23 @@ if host_machine.system() == 'darwin' and not get_option('quartz').disabled()
    endif
  endif
  
@@ -10,6 +10,13 @@ index 2609dc0..886296c 100644
 +# When compiling cairo dll for 'windows' without 'win32' stuff (such as when compiling for UWP),
 +# win32 mutex initialization is still required (see 'cairo-win32-system.c').
 +if host_machine.system() == 'windows' and get_option('win32').disabled()
++  add_project_arguments('-DWIN32_LEAN_AND_MEAN', '-DNOMINMAX', language: ['c', 'cpp'])
++  if cc.get_define('WINAPI_FAMILY') == 'WINAPI_FAMILY_APP' or cc.get_define('WINAPI_FAMILY') == 'WINAPI_FAMILY_PC_APP' or cc.get_define('WINAPI_FAMILY') == '2'
++    add_project_arguments('-DWINVER=_WIN32_WINNT_WIN10', '-D_WIN32_WINNT=_WIN32_WINNT_WIN10', '-DNTDDI_VERSION=NTDDI_WIN10_RS3', language: ['c', 'cpp'])
++  else
++    add_project_arguments('-DWINVER=_WIN32_WINNT_WIN2K', '-D_WIN32_WINNT=_WIN32_WINNT_WIN2K', language: ['c', 'cpp'])
++  endif
++  
 +  built_features += [
 +    {
 +      'name': 'cairo-win32-system-only',
