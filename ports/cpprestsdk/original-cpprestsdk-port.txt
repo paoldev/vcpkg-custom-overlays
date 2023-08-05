@@ -1,1 +1,0 @@
-https://github.com/microsoft/vcpkg/tree/48e128816e5395d97efcf78f3c29fb9ee6b21c52

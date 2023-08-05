@@ -1,0 +1,85 @@
+diff --git a/my-windows-asio-unresolved-external-fix.patch b/my-windows-asio-unresolved-external-fix.patch
+new file mode 100644
+index 0000000..283792a
+--- /dev/null
++++ b/my-windows-asio-unresolved-external-fix.patch
+@@ -0,0 +1,32 @@
++diff --git a/Release/src/CMakeLists.txt b/Release/src/CMakeLists.txt
++index 128f6d6..b8bdc08 100644
++--- a/Release/src/CMakeLists.txt
+++++ b/Release/src/CMakeLists.txt
++@@ -106,7 +106,7 @@ elseif(CPPREST_PPLX_IMPL STREQUAL "linux")
++   endif()
++ elseif(CPPREST_PPLX_IMPL STREQUAL "win")
++   target_sources(cpprest PRIVATE pplx/pplxwin.cpp)
++-  if(CPPREST_WEBSOCKETS_IMPL STREQUAL "wspp")
+++  if(CPPREST_WEBSOCKETS_IMPL STREQUAL "wspp" OR CPPREST_HTTP_CLIENT_IMPL STREQUAL "asio" OR CPPREST_HTTP_LISTENER_IMPL STREQUAL "asio")
++     target_sources(cpprest PRIVATE pplx/threadpool.cpp ../include/pplx/threadpool.h)
++     if(CPPREST_INSTALL_HEADERS)
++       install(FILES ../include/pplx/threadpool.h DESTINATION include/pplx)
++diff --git a/Release/src/pplx/threadpool.cpp b/Release/src/pplx/threadpool.cpp
++index ba38a1a..ade95cf 100644
++--- a/Release/src/pplx/threadpool.cpp
+++++ b/Release/src/pplx/threadpool.cpp
++@@ -4,7 +4,7 @@
++  **/
++ #include "stdafx.h"
++ 
++-#if !defined(CPPREST_EXCLUDE_WEBSOCKETS) || !defined(_WIN32)
+++#if !defined(_WIN32) || !defined(CPPREST_EXCLUDE_WEBSOCKETS) || defined(CPPREST_FORCE_HTTP_CLIENT_ASIO) || defined(CPPREST_FORCE_HTTP_LISTENER_ASIO)
++ #include "pplx/threadpool.h"
++ #include <boost/asio/detail/thread.hpp>
++ #include <new>
++@@ -232,4 +232,4 @@ std::unique_ptr<crossplat::threadpool> crossplat::threadpool::construct(size_t n
++ {
++     return std::unique_ptr<crossplat::threadpool>(new threadpool_impl(num_threads));
++ }
++-#endif //  !defined(CPPREST_EXCLUDE_WEBSOCKETS) || !defined(_WIN32)
+++#endif //  !defined(_WIN32) || !defined(CPPREST_EXCLUDE_WEBSOCKETS) || defined(CPPREST_FORCE_HTTP_CLIENT_ASIO) || defined(CPPREST_FORCE_HTTP_LISTENER_ASIO)
+diff --git a/portfile.cmake b/portfile.cmake
+index 237df1a..7d816f6 100644
+--- a/portfile.cmake
++++ b/portfile.cmake
+@@ -7,6 +7,7 @@ vcpkg_from_github(
+     PATCHES 
+         fix-find-openssl.patch
+         fix_narrowing.patch
++        my-windows-asio-unresolved-external-fix.patch #my-change: see https://github.com/microsoft/cpprestsdk/pull/1466
+ )
+ 
+ set(OPTIONS)
+@@ -17,6 +18,14 @@ if(NOT VCPKG_TARGET_IS_UWP)
+         -DWEBSOCKETPP_CONFIG_VERSION=${WEBSOCKETPP_PATH})
+ endif()
+ 
++#my-change begin
++if("windows-asio" IN_LIST FEATURES)
++    list(APPEND OPTIONS
++        -DCPPREST_HTTP_CLIENT_IMPL=asio
++        -DCPPREST_HTTP_LISTENER_IMPL=asio)
++endif()
++#my-change end
++
+ vcpkg_check_features(
+     OUT_FEATURE_OPTIONS FEATURE_OPTIONS
+     INVERTED_FEATURES
+diff --git a/vcpkg.json b/vcpkg.json
+index eca5412..a06dc34 100644
+--- a/vcpkg.json
++++ b/vcpkg.json
+@@ -127,6 +127,15 @@
+           "platform": "!uwp"
+         }
+       ]
++    },
++    "windows-asio": {
++      "description": "Windows asio support",
++      "dependencies": [
++        {
++          "name": "boost-asio",
++          "platform": "windows & !uwp"
++        }
++      ]
+     }
+   }
+ }
