@@ -120,6 +120,12 @@ Custom onednn port.
 New feature:  
 - never compile examples and tests.
 
+### ruy
+
+New port for "The ruy matrix multiplication library" from https://github.com/google/ruy.  
+
+This library is released under "Apache-2.0" license: https://github.com/google/ruy/blob/master/LICENSE.
+
 ### sentencepiece
 
 Custom sentencepiece port.  
