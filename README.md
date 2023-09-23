@@ -33,6 +33,16 @@ New feature:
 - **windows-asio**: add 'asio' support to windows platform.  
 It also contains the patch related to my PR <https://github.com/microsoft/cpprestsdk/pull/1466>, not integrated in main 'cpprestsdk' repository yet.
 
+### ctranslate2
+
+New port for the "CTranslate2" library from https://github.com/OpenNMT/CTranslate2:  
+
+> CTranslate2 is a C++ and Python library for efficient inference with Transformer models.
+
+This library is released under "MIT" license: https://github.com/OpenNMT/CTranslate2/blob/master/LICENSE.  
+
+For details, see the links above.
+
 ### icu
 
 Custom icu port with Windows SDK ICU support, for both windows-desktop and uwp platforms. It is a modification of the original vcpkg port found at <https://github.com/microsoft/vcpkg/tree/master/ports/icu>.
@@ -124,7 +134,9 @@ New feature:
 
 New port for "The ruy matrix multiplication library" from https://github.com/google/ruy.  
 
-This library is released under "Apache-2.0" license: https://github.com/google/ruy/blob/master/LICENSE.
+This library is released under "Apache-2.0" license: https://github.com/google/ruy/blob/master/LICENSE.  
+
+For details, see the links above.
 
 ### sentencepiece
 
@@ -140,7 +152,9 @@ New port for the "Tokenizer" library from https://github.com/OpenNMT/Tokenizer:
 
 > Tokenizer is a fast, generic, and customizable text tokenization library for C++ and Python with minimal dependencies.
 
-This library is released under "MIT" license: https://github.com/OpenNMT/Tokenizer/blob/master/LICENSE.md.
+This library is released under "MIT" license: https://github.com/OpenNMT/Tokenizer/blob/master/LICENSE.md.  
+
+For details, see the links above.
 
 ## Triplets
 

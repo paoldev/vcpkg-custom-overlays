@@ -1,0 +1,71 @@
+{
+  "name": "ctranslate2",
+  "version": "3.17.1",
+  "description": "C++ and Python library for efficient inference with Transformer models",
+  "homepage": "https://github.com/OpenNMT/CTranslate2",
+  "license": "MIT",
+  "supports": "windows & x64",
+  "dependencies": [
+    "spdlog",
+    {
+      "name": "cpu-features",
+      "platform": "!arm"
+    },
+    {
+      "name": "vcpkg-cmake",
+      "host": true
+    },
+    {
+      "name": "vcpkg-cmake-config",
+      "host": true
+    }
+  ],
+  "default-features": [ "cpu-dispatch" ],
+  "features": {
+    "cpu-dispatch": {
+      "description": "Compile CPU kernels for multiple ISA and dispatch at runtime"
+    },
+    "mkl": {
+      "description": "Compile with Intel MKL backend",
+      "dependencies": [
+        "intel-mkl"
+      ]
+    },
+    "dnnl": {
+      "description": "Compile with DNNL backend",
+      "dependencies": [
+        "onednn"
+      ]
+    },
+    "openblas": {
+      "description": "Compile with OpenBLAS backend",
+      "dependencies": [
+        "openblas"
+      ]
+    },
+    "ruy": {
+      "description": "Compile with Ruy backend",
+      "dependencies": [
+        "ruy"
+      ]
+    },
+    "cuda": {
+      "description": "Compile with CUDA backend",
+      "dependencies": [
+        "cuda"
+      ]
+    },
+    "cudnn": {
+      "description": "Compile with cuDNN backend",
+      "dependencies": [
+        {
+          "name": "ctranslate2",
+          "features": [
+            "cuda"
+          ]
+        },
+        "cudnn"
+      ]
+    }
+  }
+}
