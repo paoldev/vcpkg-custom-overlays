@@ -106,7 +106,13 @@ endforeach()
 
 mark_as_advanced(ICU_INCLUDE_DIRS ICU_LIBRARIES)
 ```
+### sentencepiece
 
+Custom sentencepiece port.  
+
+New features:  
+- override crt linkage: now it can be static or dynamic.
+- add pkgconfig support to the Windows library.
 
 ## Triplets
 
