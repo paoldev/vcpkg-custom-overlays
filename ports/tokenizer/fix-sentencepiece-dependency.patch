@@ -1,0 +1,89 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 2ecf285..52f3044 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -10,7 +10,7 @@ project(OpenNMTTokenizer)
+ option(BUILD_TESTS "Compile unit tests" OFF)
+ option(BUILD_SHARED_LIBS "Build shared libraries" ON)
+ 
+-set(CMAKE_CXX_STANDARD 11)
++set(CMAKE_CXX_STANDARD 17)
+ if(CMAKE_VERSION VERSION_LESS "3.7.0")
+   set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+ endif()
+@@ -19,31 +19,25 @@ if(NOT CMAKE_BUILD_TYPE)
+   set(CMAKE_BUILD_TYPE Release)
+ endif(NOT CMAKE_BUILD_TYPE)
+ 
+-option(SPM_ENABLE_SHARED "" OFF)
+-option(SPM_ENABLE_TCMALLOC "" OFF)
+-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/third_party/sentencepiece EXCLUDE_FROM_ALL)
+-
+-if(MSVC)
+-  set(SENTENCEPIECE_CXX_FLAGS "/w")
+-else()
+-  set(SENTENCEPIECE_CXX_FLAGS "-Wno-all -Wno-extra -Wno-error")
+-  if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+-    set(SENTENCEPIECE_CXX_FLAGS "${SENTENCEPIECE_CXX_FLAGS} -Wno-stringop-overflow")
+-  endif()
++find_package(sentencepiece)
++if (sentencepiece-NOTFOUND)
++  find_path(SENTENCEPIECE_INCLUDE_DIRS "sentencepiece_trainer.h" HINTS ${CURRENT_INSTALLED_DIR} PATH_SUFFIXES include REQUIRED)
++  find_path(SENTENCEPIECE_INCLUDE_DIRS "sentencepiece_processor.h" HINTS ${SENTENCEPIECE_INCLUDE_DIRS} REQUIRED NO_DEFAULT_PATH)
++  find_library(SENTENCEPIECE_RELEASE NAMES "sentencepiece.lib" HINTS ${CURRENT_INSTALLED_DIR} PATH_SUFFIXES lib REQUIRED)
++  find_library(SENTENCEPIECE_TRAIN_RELEASE NAMES "sentencepiece_train.lib" HINTS ${CURRENT_INSTALLED_DIR} PATH_SUFFIXES lib REQUIRED)
++  find_library(SENTENCEPIECE_DEBUG NAMES "sentencepieced.lib" HINTS ${CURRENT_INSTALLED_DIR} PATH_SUFFIXES debug/lib REQUIRED)
++  find_library(SENTENCEPIECE_TRAIN_DEBUG NAMES "sentencepiece_traind.lib" HINTS ${CURRENT_INSTALLED_DIR} PATH_SUFFIXES debug/lib REQUIRED)
++  set(SENTENCEPIECE_LINK_LIBRARIES 
++    optimized ${SENTENCEPIECE_RELEASE} ${SENTENCEPIECE_TRAIN_RELEASE}
++    debug ${SENTENCEPIECE_DEBUG} ${SENTENCEPIECE_TRAIN_DEBUG})
+ endif()
+ 
+-set_target_properties(
+-  sentencepiece-static
+-  sentencepiece_train-static
+-  PROPERTIES COMPILE_FLAGS ${SENTENCEPIECE_CXX_FLAGS}
+-  )
+-
+ if(MSVC)
+   if(NOT BUILD_SHARED_LIBS)
+     if(CMAKE_VERSION VERSION_LESS "3.15.0")
+       message(FATAL_ERROR "Use CMake 3.15 or later when setting BUILD_SHARED_LIBS to OFF")
+     endif()
+-    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
++    #set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+   endif()
+   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4 /wd4251 /d2FH4-")
+   set(ICU_COMPONENTS uc dt)
+@@ -63,7 +57,7 @@ set(INCLUDE_DIRECTORIES
+ 
+   PRIVATE
+   ${ICU_INCLUDE_DIRS}
+-  ${CMAKE_CURRENT_SOURCE_DIR}/third_party/sentencepiece/src
++  ${SENTENCEPIECE_INCLUDE_DIRS}
+   )
+ 
+ set(PUBLIC_HEADERS
+@@ -98,8 +92,7 @@ set(SOURCES
+ 
+ list(APPEND LINK_LIBRARIES
+   ${ICU_LIBRARIES}
+-  sentencepiece-static
+-  sentencepiece_train-static
++  ${SENTENCEPIECE_LINK_LIBRARIES}
+   )
+ 
+ if(COMMAND create_library)
+diff --git a/src/SentencePiece.cc b/src/SentencePiece.cc
+index 5c7cf5f..b613520 100644
+--- a/src/SentencePiece.cc
++++ b/src/SentencePiece.cc
+@@ -54,7 +54,7 @@ namespace onmt
+     if (options && (options->joiner_annotate || options->spacer_new))
+       throw std::invalid_argument("SentencePiece vocabulary restriction requires the tokenization "
+                                   "to use \"spacer_annotate\" (same as spm_encode)");
+-    auto status = _processor->SetVocabulary(vocabulary);
++    auto status = _processor->SetVocabulary(std::vector<std::string_view>(vocabulary.begin(), vocabulary.end()));
+     if (!status.ok())
+       throw std::invalid_argument(status.ToString());
+   }

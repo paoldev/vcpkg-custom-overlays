@@ -134,6 +134,14 @@ New features:
 - override crt linkage: now it can be static or dynamic.
 - add pkgconfig support to the Windows library.
 
+### tokenizer
+
+New port for the "Tokenizer" library from https://github.com/OpenNMT/Tokenizer:  
+
+> Tokenizer is a fast, generic, and customizable text tokenization library for C++ and Python with minimal dependencies.
+
+This library is released under "MIT" license: https://github.com/OpenNMT/Tokenizer/blob/master/LICENSE.md.
+
 ## Triplets
 
 - x64-windows-static-md-release

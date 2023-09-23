@@ -1,0 +1,16 @@
+{
+  "name": "tokenizer",
+  "version": "1.37.1",
+  "description": "Fast, generic, and customizable text tokenization library for C++ and Python",
+  "homepage": "https://github.com/OpenNMT/Tokenizer",
+  "license": "MIT",
+  "supports": "windows",
+  "dependencies": [
+	"icu",
+	"sentencepiece",
+	{
+      "name": "vcpkg-cmake",
+      "host": true
+    }
+  ]
+}
