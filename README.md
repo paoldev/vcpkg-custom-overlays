@@ -39,7 +39,7 @@ New port for the "CTranslate2" library from https://github.com/OpenNMT/CTranslat
 
 > CTranslate2 is a C++ and Python library for efficient inference with Transformer models.
 
-This library is released under "MIT" license: https://github.com/OpenNMT/CTranslate2/blob/master/LICENSE.  
+This library is released under the "MIT" license: https://github.com/OpenNMT/CTranslate2/blob/master/LICENSE.  
 
 For details, see the links above.
 
@@ -134,7 +134,7 @@ New feature:
 
 New port for "The ruy matrix multiplication library" from https://github.com/google/ruy.  
 
-This library is released under "Apache-2.0" license: https://github.com/google/ruy/blob/master/LICENSE.  
+This library is released under the "Apache-2.0" license: https://github.com/google/ruy/blob/master/LICENSE.  
 
 For details, see the links above.
 
@@ -152,7 +152,7 @@ New port for the "Tokenizer" library from https://github.com/OpenNMT/Tokenizer:
 
 > Tokenizer is a fast, generic, and customizable text tokenization library for C++ and Python with minimal dependencies.
 
-This library is released under "MIT" license: https://github.com/OpenNMT/Tokenizer/blob/master/LICENSE.md.  
+This library is released under the "MIT" license: https://github.com/OpenNMT/Tokenizer/blob/master/LICENSE.md.  
 
 For details, see the links above.
 
