@@ -39,6 +39,13 @@ Custom icu port with Windows SDK ICU support, for both windows-desktop and uwp p
 
 Additional feature: **ms-icu** (see below for details)
 
+### intel-mkl
+
+Custom intel-mkl port.  
+
+New feature:  
+- updated dynamic crt dependency, when used by static libraries compiled with MultiThreaded\<Debug\>DLL crt flags.
+
 ### libpsl
 
 Port to build libpsl library available at <https://github.com/rockdaboot/libpsl>.
