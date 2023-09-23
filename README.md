@@ -113,6 +113,13 @@ endforeach()
 
 mark_as_advanced(ICU_INCLUDE_DIRS ICU_LIBRARIES)
 ```
+### onednn
+
+Custom onednn port.  
+
+New feature:  
+- never compile examples and tests.
+
 ### sentencepiece
 
 Custom sentencepiece port.  

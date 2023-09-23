@@ -1,0 +1,13 @@
+diff --git a/portfile.cmake b/portfile.cmake
+index eca0601..84a0134 100644
+--- a/portfile.cmake
++++ b/portfile.cmake
+@@ -13,6 +13,8 @@ endif()
+ vcpkg_cmake_configure(
+     SOURCE_PATH "${SOURCE_PATH}"
+     OPTIONS ${DNNL_OPTIONS}
++        -DDNNL_BUILD_EXAMPLES=OFF
++        -DDNNL_BUILD_TESTS=OFF
+ )
+ vcpkg_cmake_install()
+ 
