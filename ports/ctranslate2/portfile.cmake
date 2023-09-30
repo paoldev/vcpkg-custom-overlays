@@ -37,6 +37,8 @@ endif()
 set(OPENMP_RUNTIME "NONE")  #todo: create feature?
 if (WITH_MKL AND (VCPKG_CRT_LINKAGE STREQUAL "dynamic"))	# see intel-mkl/portfile.cmake and ctranslate2/CMakeLists.txt
 	set(OPENMP_RUNTIME "INTEL")
+else()
+    set(OPENMP_RUNTIME "COMP") # force "openmp=comp", to avoid dead-lock when destroying thread_local thread_pool in parallel.cc if "openmp=none".
 endif()
 
 if (WITH_MKL)
