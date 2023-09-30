@@ -1,5 +1,7 @@
 # vcpkg-custom-overlays
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-red.svg)](LICENSE)
+
 This repository contains some custom ports I used / use for few projects of mine.
 
 ## How to install and use
