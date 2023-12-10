@@ -29,6 +29,13 @@ vcpkg_extract_source_archive(SOURCE_PATH
         fix-win-build.patch
 )
 
+#my-change begin: fix 'File name too long' error during install-icu phase, while executing 'ln -s' command.
+if(CMAKE_HOST_WIN32)
+    #Both winsymlinks and winsymlinks:nativestrict work fine, but winsymlinks:nativestrict may require Windows Developer Mode or administrative privileges.
+	set(ENV{MSYS} "winsymlinks")
+endif()
+#my-change end
+
 vcpkg_find_acquire_program(PYTHON3)
 set(ENV{PYTHON} "${PYTHON3}")
 

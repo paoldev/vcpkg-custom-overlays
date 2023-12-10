@@ -49,7 +49,8 @@ For details, see the links above.
 
 Custom icu port with Windows SDK ICU support, for both windows-desktop and uwp platforms. It is a modification of the original vcpkg port found at <https://github.com/microsoft/vcpkg/tree/master/ports/icu>.
 
-Additional feature: **ms-icu** (see below for details)
+- Fix for 'File name too long' error during install-icu phase, while executing 'ln -s' command.
+- Additional feature: **ms-icu** (see below for details)
 
 ### intel-mkl
 
