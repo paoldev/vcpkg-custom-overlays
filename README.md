@@ -145,8 +145,7 @@ For details, see the links above.
 
 Custom sentencepiece port.  
 
-New features:  
-- override crt linkage: now it can be static or dynamic.
+New feature:  
 - add pkgconfig support to the Windows library.
 
 ### tokenizer
