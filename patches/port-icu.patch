@@ -1,5 +1,5 @@
 diff --git a/portfile.cmake b/portfile.cmake
-index c622dfd..1735cd3 100644
+index 0beaa23..08e2c06 100644
 --- a/portfile.cmake
 +++ b/portfile.cmake
 @@ -1,3 +1,11 @@
@@ -14,8 +14,8 @@ index c622dfd..1735cd3 100644
  string(REGEX MATCH "^[0-9]*" ICU_VERSION_MAJOR "${VERSION}")
  string(REPLACE "." "_" VERSION2 "${VERSION}")
  string(REPLACE "." "-" VERSION3 "${VERSION}")
-@@ -21,6 +29,13 @@ vcpkg_extract_source_archive(SOURCE_PATH
-         fix-win-build.patch
+@@ -23,6 +31,13 @@ vcpkg_extract_source_archive(SOURCE_PATH
+         darwin-rpath.patch
  )
  
 +#my-change begin: fix 'File name too long' error during install-icu phase, while executing 'ln -s' command.
@@ -29,35 +29,13 @@ index c622dfd..1735cd3 100644
  set(ENV{PYTHON} "${PYTHON3}")
  
 diff --git a/vcpkg.json b/vcpkg.json
-index 88a574b..73ea31e 100644
+index 441d2be..1a0dade 100644
 --- a/vcpkg.json
 +++ b/vcpkg.json
-@@ -4,19 +4,38 @@
-   "description": "Mature and widely used Unicode and localization library.",
-   "homepage": "https://icu.unicode.org/home",
-   "license": "ICU",
--  "supports": "!uwp",
-   "dependencies": [
-     {
-       "name": "icu",
-       "host": true,
-       "features": [
-         "tools"
--      ]
-+      ],
-+	  "platform": "!uwp"
-+    },
-+	{
-+      "name": "icu",
-+	  "features": [
-+	    "ms-icu"
-+	  ],
-+	  "platform": "uwp"
-     }
-   ],
-   "features": {
+@@ -17,6 +17,18 @@
      "tools": {
-       "description": "Build tools"
+       "description": "Build tools",
+       "supports": "!uwp"
 +    },
 +	"ms-icu": {
 +      "description": "Use MS-ICU on Windows",
