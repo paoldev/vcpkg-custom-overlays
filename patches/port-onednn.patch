@@ -1,5 +1,5 @@
 diff --git a/portfile.cmake b/portfile.cmake
-index eca0601..84a0134 100644
+index fd52625..6390431 100644
 --- a/portfile.cmake
 +++ b/portfile.cmake
 @@ -13,6 +13,8 @@ endif()
