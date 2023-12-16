@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 2ecf285..52f3044 100644
+index 2ecf285..174f95d 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -10,7 +10,7 @@ project(OpenNMTTokenizer)
@@ -11,7 +11,7 @@ index 2ecf285..52f3044 100644
  if(CMAKE_VERSION VERSION_LESS "3.7.0")
    set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
  endif()
-@@ -19,31 +19,25 @@ if(NOT CMAKE_BUILD_TYPE)
+@@ -19,31 +19,27 @@ if(NOT CMAKE_BUILD_TYPE)
    set(CMAKE_BUILD_TYPE Release)
  endif(NOT CMAKE_BUILD_TYPE)
  
@@ -26,25 +26,27 @@ index 2ecf285..52f3044 100644
 -  if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 -    set(SENTENCEPIECE_CXX_FLAGS "${SENTENCEPIECE_CXX_FLAGS} -Wno-stringop-overflow")
 -  endif()
++#sentencepiece begin
 +find_package(sentencepiece)
 +if (sentencepiece-NOTFOUND)
 +  find_path(SENTENCEPIECE_INCLUDE_DIRS "sentencepiece_trainer.h" HINTS ${CURRENT_INSTALLED_DIR} PATH_SUFFIXES include REQUIRED)
 +  find_path(SENTENCEPIECE_INCLUDE_DIRS "sentencepiece_processor.h" HINTS ${SENTENCEPIECE_INCLUDE_DIRS} REQUIRED NO_DEFAULT_PATH)
 +  find_library(SENTENCEPIECE_RELEASE NAMES "sentencepiece.lib" HINTS ${CURRENT_INSTALLED_DIR} PATH_SUFFIXES lib REQUIRED)
 +  find_library(SENTENCEPIECE_TRAIN_RELEASE NAMES "sentencepiece_train.lib" HINTS ${CURRENT_INSTALLED_DIR} PATH_SUFFIXES lib REQUIRED)
-+  find_library(SENTENCEPIECE_DEBUG NAMES "sentencepieced.lib" HINTS ${CURRENT_INSTALLED_DIR} PATH_SUFFIXES debug/lib REQUIRED)
-+  find_library(SENTENCEPIECE_TRAIN_DEBUG NAMES "sentencepiece_traind.lib" HINTS ${CURRENT_INSTALLED_DIR} PATH_SUFFIXES debug/lib REQUIRED)
++  find_library(SENTENCEPIECE_DEBUG NAMES "sentencepiece.lib" HINTS ${CURRENT_INSTALLED_DIR} PATH_SUFFIXES debug/lib REQUIRED)
++  find_library(SENTENCEPIECE_TRAIN_DEBUG NAMES "sentencepiece_train.lib" HINTS ${CURRENT_INSTALLED_DIR} PATH_SUFFIXES debug/lib REQUIRED)
 +  set(SENTENCEPIECE_LINK_LIBRARIES 
 +    optimized ${SENTENCEPIECE_RELEASE} ${SENTENCEPIECE_TRAIN_RELEASE}
 +    debug ${SENTENCEPIECE_DEBUG} ${SENTENCEPIECE_TRAIN_DEBUG})
  endif()
- 
+-
 -set_target_properties(
 -  sentencepiece-static
 -  sentencepiece_train-static
 -  PROPERTIES COMPILE_FLAGS ${SENTENCEPIECE_CXX_FLAGS}
 -  )
--
++#sentencepiece end
+ 
  if(MSVC)
    if(NOT BUILD_SHARED_LIBS)
      if(CMAKE_VERSION VERSION_LESS "3.15.0")
@@ -55,7 +57,7 @@ index 2ecf285..52f3044 100644
    endif()
    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4 /wd4251 /d2FH4-")
    set(ICU_COMPONENTS uc dt)
-@@ -63,7 +57,7 @@ set(INCLUDE_DIRECTORIES
+@@ -63,7 +59,7 @@ set(INCLUDE_DIRECTORIES
  
    PRIVATE
    ${ICU_INCLUDE_DIRS}
@@ -64,7 +66,7 @@ index 2ecf285..52f3044 100644
    )
  
  set(PUBLIC_HEADERS
-@@ -98,8 +92,7 @@ set(SOURCES
+@@ -98,8 +94,7 @@ set(SOURCES
  
  list(APPEND LINK_LIBRARIES
    ${ICU_LIBRARIES}
