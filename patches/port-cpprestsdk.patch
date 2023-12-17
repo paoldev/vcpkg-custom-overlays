@@ -37,18 +37,18 @@ index 0000000..283792a
 +-#endif //  !defined(CPPREST_EXCLUDE_WEBSOCKETS) || !defined(_WIN32)
 ++#endif //  !defined(_WIN32) || !defined(CPPREST_EXCLUDE_WEBSOCKETS) || defined(CPPREST_FORCE_HTTP_CLIENT_ASIO) || defined(CPPREST_FORCE_HTTP_LISTENER_ASIO)
 diff --git a/portfile.cmake b/portfile.cmake
-index 237df1a..7d816f6 100644
+index 371d92a..e851910 100644
 --- a/portfile.cmake
 +++ b/portfile.cmake
-@@ -7,6 +7,7 @@ vcpkg_from_github(
-     PATCHES 
+@@ -8,6 +8,7 @@ vcpkg_from_github(
          fix-find-openssl.patch
          fix_narrowing.patch
+         fix-uwp.patch
 +        my-windows-asio-unresolved-external-fix.patch #my-change: see https://github.com/microsoft/cpprestsdk/pull/1466
  )
  
  set(OPTIONS)
-@@ -17,6 +18,14 @@ if(NOT VCPKG_TARGET_IS_UWP)
+@@ -18,6 +19,14 @@ if(NOT VCPKG_TARGET_IS_UWP)
          -DWEBSOCKETPP_CONFIG_VERSION=${WEBSOCKETPP_PATH})
  endif()
  
@@ -64,10 +64,10 @@ index 237df1a..7d816f6 100644
      OUT_FEATURE_OPTIONS FEATURE_OPTIONS
      INVERTED_FEATURES
 diff --git a/vcpkg.json b/vcpkg.json
-index eca5412..a06dc34 100644
+index e8a0e46..e1de253 100644
 --- a/vcpkg.json
 +++ b/vcpkg.json
-@@ -127,6 +127,15 @@
+@@ -111,6 +111,19 @@
            "platform": "!uwp"
          }
        ]
@@ -77,6 +77,10 @@ index eca5412..a06dc34 100644
 +      "dependencies": [
 +        {
 +          "name": "boost-asio",
++          "platform": "windows & !uwp"
++        },
++        {
++          "name": "openssl",
 +          "platform": "windows & !uwp"
 +        }
 +      ]
