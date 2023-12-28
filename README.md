@@ -68,6 +68,13 @@ Features:
 - **icu**: it builds libpsl with -Druntime=libicu option
 - **libidn2**: it builds libpsl with -Druntime=libidn2 option
 
+### lua
+
+Custom lua port.  
+
+New feature:  
+- export LUA_VERSION_STRING to meson build system.
+
 ### ms-icu
 
 Port to expose Windows SDK ICU to other vcpkg ports.  

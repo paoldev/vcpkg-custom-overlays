@@ -1,0 +1,10 @@
+diff --git a/vcpkg-cmake-wrapper.cmake.in b/vcpkg-cmake-wrapper.cmake.in
+index 3de5708..0d1b56c 100644
+--- a/vcpkg-cmake-wrapper.cmake.in
++++ b/vcpkg-cmake-wrapper.cmake.in
+@@ -20,4 +20,5 @@ if (TARGET lua-cpp)
+     list(APPEND LUA_LIBRARIES lua-cpp)
+ endif()
+ 
++set(LUA_VERSION_STRING "@VERSION@")
+ set(LUA_FOUND 1)
