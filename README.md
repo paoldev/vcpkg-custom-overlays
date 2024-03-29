@@ -167,7 +167,6 @@ For details, see the links above.
 
 ## Triplets
 
-- x64-windows-static-md-release
 - x64-uwp-static-md-release
 
 # License
