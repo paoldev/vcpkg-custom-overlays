@@ -1,51 +1,60 @@
-
-vcpkg_download_distfile(ARCHIVE
-    URLS "https://github.com/rockdaboot/libpsl/releases/download/${VERSION}/libpsl-${VERSION}.tar.gz"
-    FILENAME "libpsl-${VERSION}.tar.gz"
-    SHA512 f1df72220bf4391d4701007100b0df66c833a2cbcb7481c9d13f0b9e0cad3b66d2d15d4b976e5bad60d2ad1540355112fa1acb07aa925c241d2d7cd20681c71d
-)
-
-vcpkg_extract_source_archive_ex(
+vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
-    ARCHIVE "${ARCHIVE}"
-	PATCHES
-	  missing-U_ICU_VERSION.patch
-	  fix-uwp-linker.patch
-	  optionally-build-tools-and-tests.patch
+    REPO rockdaboot/libpsl
+    REF "${VERSION}"
+    SHA512 "d8e224b2ce5d9a6ac78700eb8975d09aef4e5af7db29539e5e339c5cd100f1272371fe45757ab5383ddbcd569bdf9d697a78932ea9fdf43ff48d3cea02f644cd"
+    HEAD_REF master
+    PATCHES
+      missing-U_ICU_VERSION.patch #my_change
+      fix-uwp-linker.patch #my_change
+      optionally-build-tools.patch #my_change
 )
 
-set(RUNTIME no)
-if ("icu" IN_LIST FEATURES)
-  set(RUNTIME libicu)
-elseif ("libidn2" IN_LIST FEATURES)
-  set(RUNTIME libidn2)
-  if(VCPKG_TARGET_IS_WINDOWS)
-    set(VCPKG_C_FLAGS "${VCPKG_C_FLAGS} -Dstrcasecmp=_stricmp")	#compile fix with libidn2
-	set(VCPKG_CXX_FLAGS "${VCPKG_CXX_FLAGS} -Dstrcasecmp=_stricmp")	#compile fix with libidn2
-  endif()
+vcpkg_download_distfile(
+    PUBLIC_SUFFIX_LIST_DAT 
+    URLS https://raw.githubusercontent.com/publicsuffix/list/5db9b65997e3c9230ac4353b01994c2ae9667cb9/public_suffix_list.dat
+    FILENAME libpsl_public_suffix_list.dat
+    SHA512 08ae73cb028ce9d57ad5ce09afd76a5b379fa18e1370f6a1d094f4242ce66b0f4bf005b05e796c287ab8074aca7f30d023e430f64d3563fa93adbb2371bda220
+)
+file(COPY "${PUBLIC_SUFFIX_LIST_DAT}" DESTINATION "${SOURCE_PATH}/list")
+file(RENAME "${SOURCE_PATH}/list/libpsl_public_suffix_list.dat" "${SOURCE_PATH}/list/public_suffix_list.dat")
+
+vcpkg_list(SET RUNTIME_OPTIONS)
+if(libidn2 IN_LIST FEATURES)
+    list(APPEND RUNTIME_OPTIONS -Druntime=libidn2)
+endif()
+if(libicu IN_LIST FEATURES)
+    list(APPEND RUNTIME_OPTIONS -Druntime=libicu)
+endif()
+if(RUNTIME_OPTIONS STREQUAL "")
+    message(FATAL_ERROR "At least one of libidn2 and libicu should be selected.")
 endif()
 
 vcpkg_configure_meson(
     SOURCE_PATH "${SOURCE_PATH}"
     OPTIONS
-		-Dbuiltin=true
-        -Druntime=${RUNTIME}
-		-Ddocs=false
-		-Dtools=false
-		-Dtests=false
+        ${RUNTIME_OPTIONS}
+        -Ddocs=false
+        -Dtests=false
+        -Dtools=false #my_change
+        -Dbuiltin=true #my_change
 )
-vcpkg_install_meson()
 
+vcpkg_install_meson()
+vcpkg_fixup_pkgconfig()
+
+#my_change begin
+#vcpkg_copy_tools(TOOL_NAMES psl AUTO_CLEAN)
+#vcpkg_copy_tool_dependencies("${CURRENT_PACKAGES_DIR}/tools/${PORT}")
+#file(RENAME "${CURRENT_PACKAGES_DIR}/bin/psl-make-dafsa" "${CURRENT_PACKAGES_DIR}/tools/${PORT}/psl-make-dafsa")
 file(REMOVE "${CURRENT_PACKAGES_DIR}/bin/psl-make-dafsa")
 file(REMOVE "${CURRENT_PACKAGES_DIR}/debug/bin/psl-make-dafsa")
-file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/share")
 file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/share/man")
-file(INSTALL "${SOURCE_PATH}/LICENSE" DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}" RENAME copyright)
-
+#my_change end
 if(VCPKG_LIBRARY_LINKAGE STREQUAL "static")
-  vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/include/libpsl.h" "defined PSL_STATIC" "1")
-  file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/bin" "${CURRENT_PACKAGES_DIR}/debug/bin")
+    vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/include/libpsl.h" "defined PSL_STATIC" "1") #my_change
+    file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/bin" "${CURRENT_PACKAGES_DIR}/debug/bin")
 endif()
+file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/share")
 
-vcpkg_copy_pdbs()
-vcpkg_fixup_pkgconfig()
+vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE")

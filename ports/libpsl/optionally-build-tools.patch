@@ -1,0 +1,26 @@
+diff --git a/meson.build b/meson.build
+index 4975d7e..7669b81 100644
+--- a/meson.build
++++ b/meson.build
+@@ -134,7 +134,9 @@ endif
+ 
+ subdir('include')
+ subdir('src')
+-subdir('tools')
++if get_option('tools')
++  subdir('tools')
++endif
+ if get_option('tests')
+   subdir('tests')
+   subdir('fuzz')
+diff --git a/meson_options.txt b/meson_options.txt
+index d66f256..dbcb365 100644
+--- a/meson_options.txt
++++ b/meson_options.txt
+@@ -20,3 +20,6 @@ option('docs', type: 'boolean', value: false,
+ 
+ option('tests', type: 'boolean', value: true,
+   description: 'Build the tests and fuzzers')
++
++option('tools', type: 'boolean', value: true,
++  description: 'Build tools targets')

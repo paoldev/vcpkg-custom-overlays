@@ -61,12 +61,12 @@ New feature:
 
 ### libpsl
 
-Port to build libpsl library available at <https://github.com/rockdaboot/libpsl>.
+Custom libpsl port.  
 
-Features:
-- **default (without arguments)**: it builds libpsl with -Druntime=no option
-- **icu**: it builds libpsl with -Druntime=libicu option
-- **libidn2**: it builds libpsl with -Druntime=libidn2 option
+New features:
+- uwp support
+- skip building tools
+- use built-in PSL data
 
 ### lua
 
