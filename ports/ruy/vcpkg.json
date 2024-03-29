@@ -1,6 +1,6 @@
 {
   "name": "ruy",
-  "version-date": "2023-07-26",
+  "version-date": "2024-03-21",
   "description": "The ruy matrix multiplication library",
   "homepage": "https://github.com/google/ruy",
   "license": "Apache-2.0",
