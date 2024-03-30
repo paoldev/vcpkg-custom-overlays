@@ -1,0 +1,13 @@
+diff --git a/include/ctranslate2/utils.h b/include/ctranslate2/utils.h
+index 23c58cb..cd09bc0 100644
+--- a/include/ctranslate2/utils.h
++++ b/include/ctranslate2/utils.h
+@@ -30,7 +30,7 @@ namespace ctranslate2 {
+   std::vector<std::vector<std::vector<std::string>>>
+   extract_features(std::vector<std::vector<std::string>> batch,
+                    size_t num_features,
+-                   const std::string& features_separator = "\uFFE8");
++                   const std::string& features_separator = u8"\uFFE8");
+ 
+   template <typename T, typename I>
+   static std::vector<T> index_vector(const std::vector<T>& v,
