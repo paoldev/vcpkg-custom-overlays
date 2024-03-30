@@ -1,14 +1,14 @@
 diff --git a/my-optional-win32-feature.patch b/my-optional-win32-feature.patch
 new file mode 100644
-index 0000000..e959150
+index 0000000..1b4986a
 --- /dev/null
 +++ b/my-optional-win32-feature.patch
 @@ -0,0 +1,55 @@
 +diff --git a/meson.build b/meson.build
-+index 12512d1..099d916 100644
++index 2aea0b9..be52e5c 100644
 +--- a/meson.build
 ++++ b/meson.build
-+@@ -491,7 +491,23 @@ if host_machine.system() == 'darwin' and not get_option('quartz').disabled()
++@@ -495,7 +495,23 @@ if host_machine.system() == 'darwin' and not get_option('quartz').disabled()
 +   endif
 + endif
 + 
@@ -22,7 +22,7 @@ index 0000000..e959150
 ++  else
 ++    add_project_arguments('-DWINVER=_WIN32_WINNT_WIN2K', '-D_WIN32_WINNT=_WIN32_WINNT_WIN2K', language: ['c', 'cpp'])
 ++  endif
-++  
+++
 ++  built_features += [
 ++    {
 ++      'name': 'cairo-win32-system-only',
@@ -34,19 +34,19 @@ index 0000000..e959150
 + 
 +   win32_extra_deps = [
 +diff --git a/meson_options.txt b/meson_options.txt
-+index 4bdfe8a..8d2e79e 100644
++index f481ef3..56e5128 100644
 +--- a/meson_options.txt
 ++++ b/meson_options.txt
 +@@ -7,6 +7,7 @@ option('freetype', type : 'feature', value : 'auto')
 + option('png', type : 'feature', value : 'auto') # png and svg surfaces
 + option('quartz', type : 'feature', value : 'auto')
-+ option('tee', type : 'feature', value : 'disabled')
++ option('tee', type : 'feature', value : 'auto')
 ++option('win32', type : 'feature', value : 'auto')
 + option('xcb', type : 'feature', value : 'auto')
 + option('xlib', type : 'feature', value : 'auto')
 + option('xlib-xcb', type : 'feature', value : 'disabled')
 +diff --git a/src/meson.build b/src/meson.build
-+index 6866512..a75b0fc 100644
++index ac06ac6..15f9ca6 100644
 +--- a/src/meson.build
 ++++ b/src/meson.build
 +@@ -182,6 +182,9 @@ cairo_feature_sources = {
@@ -60,15 +60,16 @@ index 0000000..e959150
 +     'cairo-script-surface.c',
 +   ],
 diff --git a/portfile.cmake b/portfile.cmake
-index 36b8763..83704d9 100644
+index 0e5bff1..6d3fd02 100644
 --- a/portfile.cmake
 +++ b/portfile.cmake
-@@ -13,9 +13,19 @@ vcpkg_from_gitlab(
+@@ -12,10 +12,20 @@ vcpkg_from_gitlab(
+         cairo_static_fix.patch
          disable-atomic-ops-check.patch # See https://gitlab.freedesktop.org/cairo/cairo/-/issues/554
-         mingw-dllexport.patch
          fix-static-missing-lib-msimg32.patch
 +        my-optional-win32-feature.patch  #my-change: it MUST be applied before 'fix_clang-cl_build.patch'
          ${PATCHES}
+         fix-alloca-undefine.patch # Upstream PR: https://gitlab.freedesktop.org/cairo/cairo/-/merge_requests/520
  )
  
 +#my-change begin
@@ -83,3 +84,16 @@ index 36b8763..83704d9 100644
  if("fontconfig" IN_LIST FEATURES)
      list(APPEND OPTIONS -Dfontconfig=enabled)
  else()
+diff --git a/vcpkg.json b/vcpkg.json
+index 23684bb..601e619 100644
+--- a/vcpkg.json
++++ b/vcpkg.json
+@@ -4,7 +4,7 @@
+   "description": "Cairo is a 2D graphics library with support for multiple output devices. Currently supported output targets include the X Window System (via both Xlib and XCB), Quartz, Win32, image buffers, PostScript, PDF, and SVG file output. Experimental backends include OpenGL, BeOS, OS/2, and DirectFB.",
+   "homepage": "https://cairographics.org",
+   "license": "LGPL-2.1-only OR MPL-1.1",
+-  "supports": "!xbox & !uwp",
++  "supports": "!xbox",
+   "dependencies": [
+     "dirent",
+     "expat",

@@ -1,8 +1,8 @@
 diff --git a/meson.build b/meson.build
-index 12512d1..099d916 100644
+index 2aea0b9..be52e5c 100644
 --- a/meson.build
 +++ b/meson.build
-@@ -491,7 +491,23 @@ if host_machine.system() == 'darwin' and not get_option('quartz').disabled()
+@@ -495,7 +495,23 @@ if host_machine.system() == 'darwin' and not get_option('quartz').disabled()
    endif
  endif
  
@@ -16,7 +16,7 @@ index 12512d1..099d916 100644
 +  else
 +    add_project_arguments('-DWINVER=_WIN32_WINNT_WIN2K', '-D_WIN32_WINNT=_WIN32_WINNT_WIN2K', language: ['c', 'cpp'])
 +  endif
-+  
++
 +  built_features += [
 +    {
 +      'name': 'cairo-win32-system-only',
@@ -28,19 +28,19 @@ index 12512d1..099d916 100644
  
    win32_extra_deps = [
 diff --git a/meson_options.txt b/meson_options.txt
-index 4bdfe8a..8d2e79e 100644
+index f481ef3..56e5128 100644
 --- a/meson_options.txt
 +++ b/meson_options.txt
 @@ -7,6 +7,7 @@ option('freetype', type : 'feature', value : 'auto')
  option('png', type : 'feature', value : 'auto') # png and svg surfaces
  option('quartz', type : 'feature', value : 'auto')
- option('tee', type : 'feature', value : 'disabled')
+ option('tee', type : 'feature', value : 'auto')
 +option('win32', type : 'feature', value : 'auto')
  option('xcb', type : 'feature', value : 'auto')
  option('xlib', type : 'feature', value : 'auto')
  option('xlib-xcb', type : 'feature', value : 'disabled')
 diff --git a/src/meson.build b/src/meson.build
-index 6866512..a75b0fc 100644
+index ac06ac6..15f9ca6 100644
 --- a/src/meson.build
 +++ b/src/meson.build
 @@ -182,6 +182,9 @@ cairo_feature_sources = {
