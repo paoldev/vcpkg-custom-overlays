@@ -1,5 +1,5 @@
 diff --git a/portfile.cmake b/portfile.cmake
-index 8744c67..a70448e 100644
+index 26015d2..9fac11b 100644
 --- a/portfile.cmake
 +++ b/portfile.cmake
 @@ -1,3 +1,11 @@
@@ -11,11 +11,11 @@ index 8744c67..a70448e 100644
 +endif()
 +#my-change end
 +
- string(REGEX MATCH "^[0-9]*" ICU_VERSION_MAJOR "${VERSION}")
- string(REPLACE "." "_" VERSION2 "${VERSION}")
- string(REPLACE "." "-" VERSION3 "${VERSION}")
-@@ -23,6 +31,13 @@ vcpkg_extract_source_archive(SOURCE_PATH
-         darwin-rpath.patch
+ if(NOT VCPKG_TARGET_IS_WINDOWS)
+     message(WARNING "${PORT} currently requires the following programs from the system package manager:
+     autoconf automake autoconf-archive
+@@ -39,6 +47,13 @@ vcpkg_extract_source_archive(SOURCE_PATH
+         mingw-strict-ansi.diff # backport of https://github.com/unicode-org/icu/pull/3003
  )
  
 +#my-change begin: fix 'File name too long' error during install-icu phase, while executing 'ln -s' command.
@@ -29,7 +29,7 @@ index 8744c67..a70448e 100644
  set(ENV{PYTHON} "${PYTHON3}")
  
 diff --git a/vcpkg.json b/vcpkg.json
-index 1e9e284..a673b81 100644
+index 23c96f0..c8e261b 100644
 --- a/vcpkg.json
 +++ b/vcpkg.json
 @@ -18,6 +18,18 @@
