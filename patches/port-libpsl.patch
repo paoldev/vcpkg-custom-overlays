@@ -39,87 +39,27 @@ index 0000000..073b658
 + #elif defined(WITH_LIBIDN2)
 + 	return PACKAGE_VERSION " (+libidn2/" IDN2_VERSION ")";
 + #elif defined(WITH_LIBIDN)
-diff --git a/optionally-build-tools.patch b/optionally-build-tools.patch
-new file mode 100644
-index 0000000..0926709
---- /dev/null
-+++ b/optionally-build-tools.patch
-@@ -0,0 +1,26 @@
-+diff --git a/meson.build b/meson.build
-+index 4975d7e..7669b81 100644
-+--- a/meson.build
-++++ b/meson.build
-+@@ -134,7 +134,9 @@ endif
-+ 
-+ subdir('include')
-+ subdir('src')
-+-subdir('tools')
-++if get_option('tools')
-++  subdir('tools')
-++endif
-+ if get_option('tests')
-+   subdir('tests')
-+   subdir('fuzz')
-+diff --git a/meson_options.txt b/meson_options.txt
-+index d66f256..dbcb365 100644
-+--- a/meson_options.txt
-++++ b/meson_options.txt
-+@@ -20,3 +20,6 @@ option('docs', type: 'boolean', value: false,
-+ 
-+ option('tests', type: 'boolean', value: true,
-+   description: 'Build the tests and fuzzers')
-++
-++option('tools', type: 'boolean', value: true,
-++  description: 'Build tools targets')
 diff --git a/portfile.cmake b/portfile.cmake
-index 40b36eb..8338310 100644
+index 8f80625..7a358d7 100644
 --- a/portfile.cmake
 +++ b/portfile.cmake
-@@ -4,6 +4,10 @@ vcpkg_from_github(
+@@ -4,6 +4,9 @@ vcpkg_from_github(
      REF "${VERSION}"
      SHA512 "d8e224b2ce5d9a6ac78700eb8975d09aef4e5af7db29539e5e339c5cd100f1272371fe45757ab5383ddbcd569bdf9d697a78932ea9fdf43ff48d3cea02f644cd"
      HEAD_REF master
 +    PATCHES
 +      missing-U_ICU_VERSION.patch #my_change
 +      fix-uwp-linker.patch #my_change
-+      optionally-build-tools.patch #my_change
  )
  
- vcpkg_download_distfile(
-@@ -32,15 +36,23 @@ vcpkg_configure_meson(
-         ${RUNTIME_OPTIONS}
-         -Ddocs=false
-         -Dtests=false
-+        -Dtools=false #my_change
-+        -Dbuiltin=true #my_change
- )
- 
- vcpkg_install_meson()
- vcpkg_fixup_pkgconfig()
- 
--vcpkg_copy_tools(TOOL_NAMES psl AUTO_CLEAN)
--vcpkg_copy_tool_dependencies("${CURRENT_PACKAGES_DIR}/tools/${PORT}")
--file(RENAME "${CURRENT_PACKAGES_DIR}/bin/psl-make-dafsa" "${CURRENT_PACKAGES_DIR}/tools/${PORT}/psl-make-dafsa")
-+#my_change begin
-+#vcpkg_copy_tools(TOOL_NAMES psl AUTO_CLEAN)
-+#vcpkg_copy_tool_dependencies("${CURRENT_PACKAGES_DIR}/tools/${PORT}")
-+#file(RENAME "${CURRENT_PACKAGES_DIR}/bin/psl-make-dafsa" "${CURRENT_PACKAGES_DIR}/tools/${PORT}/psl-make-dafsa")
-+file(REMOVE "${CURRENT_PACKAGES_DIR}/bin/psl-make-dafsa")
-+file(REMOVE "${CURRENT_PACKAGES_DIR}/debug/bin/psl-make-dafsa")
-+file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/share/man")
-+#my_change end
- if(VCPKG_LIBRARY_LINKAGE STREQUAL "static")
-+    vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/include/libpsl.h" "defined PSL_STATIC" "1") #my_change
-     file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/bin" "${CURRENT_PACKAGES_DIR}/debug/bin")
- endif()
- file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/share")
+ set(list_ref 0ed17ee161ed2ae551c78f3b399ac8f2724d2154)
 diff --git a/vcpkg.json b/vcpkg.json
-index a572d60..b36a81c 100644
+index 2dd899b..57840d5 100644
 --- a/vcpkg.json
 +++ b/vcpkg.json
-@@ -4,7 +4,6 @@
+@@ -5,7 +5,6 @@
    "description": "C library for the Public Suffix List",
-   "homepage": "rockdaboot.github.io/libpsl",
+   "homepage": "https://rockdaboot.github.io/libpsl/",
    "license": "MIT",
 -  "supports": "!uwp",
    "dependencies": [

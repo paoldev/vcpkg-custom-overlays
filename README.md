@@ -65,8 +65,7 @@ Custom libpsl port.
 
 New features:
 - uwp support
-- skip building tools
-- use built-in PSL data
+- optional support for "ms-icu" dependency
 
 ### lua
 
