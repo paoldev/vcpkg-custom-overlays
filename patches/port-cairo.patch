@@ -60,16 +60,17 @@ index 0000000..1b4986a
 +     'cairo-script-surface.c',
 +   ],
 diff --git a/portfile.cmake b/portfile.cmake
-index 0e5bff1..6d3fd02 100644
+index 63d5497..da44d4c 100644
 --- a/portfile.cmake
 +++ b/portfile.cmake
-@@ -12,10 +12,20 @@ vcpkg_from_gitlab(
+@@ -12,11 +12,21 @@ vcpkg_from_gitlab(
          cairo_static_fix.patch
          disable-atomic-ops-check.patch # See https://gitlab.freedesktop.org/cairo/cairo/-/issues/554
          fix-static-missing-lib-msimg32.patch
 +        my-optional-win32-feature.patch  #my-change: it MUST be applied before 'fix_clang-cl_build.patch'
          ${PATCHES}
          fix-alloca-undefine.patch # Upstream PR: https://gitlab.freedesktop.org/cairo/cairo/-/merge_requests/520
+         cairo_add_lzo_feature_option.patch
  )
  
 +#my-change begin
@@ -85,10 +86,10 @@ index 0e5bff1..6d3fd02 100644
      list(APPEND OPTIONS -Dfontconfig=enabled)
  else()
 diff --git a/vcpkg.json b/vcpkg.json
-index 23684bb..601e619 100644
+index 8985a87..60d4e53 100644
 --- a/vcpkg.json
 +++ b/vcpkg.json
-@@ -4,7 +4,7 @@
+@@ -5,7 +5,7 @@
    "description": "Cairo is a 2D graphics library with support for multiple output devices. Currently supported output targets include the X Window System (via both Xlib and XCB), Quartz, Win32, image buffers, PostScript, PDF, and SVG file output. Experimental backends include OpenGL, BeOS, OS/2, and DirectFB.",
    "homepage": "https://cairographics.org",
    "license": "LGPL-2.1-only OR MPL-1.1",

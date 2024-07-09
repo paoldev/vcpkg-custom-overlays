@@ -15,6 +15,7 @@ vcpkg_from_gitlab(
         my-optional-win32-feature.patch  #my-change: it MUST be applied before 'fix_clang-cl_build.patch'
         ${PATCHES}
         fix-alloca-undefine.patch # Upstream PR: https://gitlab.freedesktop.org/cairo/cairo/-/merge_requests/520
+        cairo_add_lzo_feature_option.patch
 )
 
 #my-change begin
@@ -51,6 +52,12 @@ if("gobject" IN_LIST FEATURES)
     list(APPEND OPTIONS -Dglib=enabled)
 else()
     list(APPEND OPTIONS -Dglib=disabled)
+endif()
+
+if("lzo" IN_LIST FEATURES)
+    list(APPEND OPTIONS -Dlzo=enabled)
+else()
+    list(APPEND OPTIONS -Dlzo=disabled)
 endif()
 
 if(VCPKG_TARGET_IS_WINDOWS AND NOT VCPKG_TARGET_IS_MINGW)
