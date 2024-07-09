@@ -1,5 +1,5 @@
 diff --git a/portfile.cmake b/portfile.cmake
-index 900d5bf..8685301 100644
+index c054aa1..3c1fe47 100644
 --- a/portfile.cmake
 +++ b/portfile.cmake
 @@ -103,7 +103,7 @@ if(VCPKG_TARGET_IS_WINDOWS)
@@ -7,16 +7,7 @@ index 900d5bf..8685301 100644
      file(COPY "${mkl_dir}/include/" DESTINATION "${CURRENT_PACKAGES_DIR}/include")
      # see https://www.intel.com/content/www/us/en/developer/tools/oneapi/onemkl-link-line-advisor.html for linking
 -    if(VCPKG_LIBRARY_LINKAGE STREQUAL "dynamic")
-+    if((VCPKG_LIBRARY_LINKAGE STREQUAL "dynamic") OR (VCPKG_CRT_LINKAGE STREQUAL "dynamic"))
++    if((VCPKG_LIBRARY_LINKAGE STREQUAL "dynamic") OR (VCPKG_CRT_LINKAGE STREQUAL "dynamic")) #my-change
        set(files "mkl_core_dll.lib" "mkl_${threading}_dll.lib" "mkl_intel_${interface}_dll.lib" "mkl_blas95_${interface}.lib" "mkl_lapack95_${interface}.lib") # "mkl_rt.lib" single dynamic lib with dynamic dispatch
        file(COPY "${mkl_dir}/redist/intel64/" DESTINATION "${CURRENT_PACKAGES_DIR}/bin") # Could probably be reduced instead of copying all
        if(NOT VCPKG_BUILD_TYPE)
-@@ -236,7 +236,7 @@ endif()
- 
- file(COPY "${mkl_dir}/lib/cmake/" DESTINATION "${CURRENT_PACKAGES_DIR}/share/")
- vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/share/mkl/MKLConfig.cmake" "MKL_CMAKE_PATH}/../../../" "MKL_CMAKE_PATH}/../../")
--vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/share/mkl/MKLConfig.cmake" "redist/\${MKL_ARCH}/" "bin")
-+vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/share/mkl/MKLConfig.cmake" "redist/\${MKL_ARCH}" "bin")
- #TODO: Hardcode settings from portfile in config.cmake
- #TODO: Give lapack/blas information about the correct BLA_VENDOR depending on settings. 
- 

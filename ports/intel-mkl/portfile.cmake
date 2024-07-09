@@ -103,7 +103,7 @@ if(VCPKG_TARGET_IS_WINDOWS)
     set(mkl_dir "${extract_1_dir}/Intel/Compiler/12.0/mkl/2023.0.0")
     file(COPY "${mkl_dir}/include/" DESTINATION "${CURRENT_PACKAGES_DIR}/include")
     # see https://www.intel.com/content/www/us/en/developer/tools/oneapi/onemkl-link-line-advisor.html for linking
-    if((VCPKG_LIBRARY_LINKAGE STREQUAL "dynamic") OR (VCPKG_CRT_LINKAGE STREQUAL "dynamic"))
+    if((VCPKG_LIBRARY_LINKAGE STREQUAL "dynamic") OR (VCPKG_CRT_LINKAGE STREQUAL "dynamic")) #my-change
       set(files "mkl_core_dll.lib" "mkl_${threading}_dll.lib" "mkl_intel_${interface}_dll.lib" "mkl_blas95_${interface}.lib" "mkl_lapack95_${interface}.lib") # "mkl_rt.lib" single dynamic lib with dynamic dispatch
       file(COPY "${mkl_dir}/redist/intel64/" DESTINATION "${CURRENT_PACKAGES_DIR}/bin") # Could probably be reduced instead of copying all
       if(NOT VCPKG_BUILD_TYPE)
@@ -210,13 +210,13 @@ else()
     )
     file(REMOVE ${files_to_remove})
     file(COPY_FILE "${mkl_dir}/lib/pkgconfig/${main_pc_file}" "${CURRENT_PACKAGES_DIR}/lib/pkgconfig/${main_pc_file}")
-    vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/lib/pkgconfig/${main_pc_file}" "\${exec_prefix}/${package_libdir}" "\${exec_prefix}/lib/intel64")
+    vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/lib/pkgconfig/${main_pc_file}" "\${exec_prefix}/${package_libdir}" "\${exec_prefix}/lib/intel64" IGNORE_UNCHANGED)
   
     set(compiler_dir "${extract_1_dir}/_installdir/compiler/2023.0.0")
     if(threading STREQUAL "intel_thread")
       file(COPY "${compiler_dir}/${compiler_libdir}/" DESTINATION "${CURRENT_PACKAGES_DIR}/lib/intel64")
       file(COPY_FILE "${compiler_dir}/lib/pkgconfig/openmp.pc" "${CURRENT_PACKAGES_DIR}/lib/pkgconfig/libiomp5.pc")
-      vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/lib/pkgconfig/libiomp5.pc" "/${compiler_libdir}/" "/lib/intel64/")
+      vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/lib/pkgconfig/libiomp5.pc" "/${compiler_libdir}/" "/lib/intel64/" IGNORE_UNCHANGED)
       vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/lib/pkgconfig/${main_pc_file}" "openmp" "libiomp5")
     endif()
 endif()
