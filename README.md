@@ -137,7 +137,7 @@ mark_as_advanced(ICU_INCLUDE_DIRS ICU_LIBRARIES)
 Custom onednn port.  
 
 New feature:  
-- never compile examples and tests.
+- never compile doc, examples and tests.
 
 ### ruy
 
