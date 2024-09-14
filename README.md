@@ -132,13 +132,6 @@ endforeach()
 
 mark_as_advanced(ICU_INCLUDE_DIRS ICU_LIBRARIES)
 ```
-### onednn
-
-Custom onednn port.  
-
-New feature:  
-- never compile doc, examples and tests.
-
 ### ruy
 
 New port for "The ruy matrix multiplication library" from https://github.com/google/ruy.  
