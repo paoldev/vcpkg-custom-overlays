@@ -13,7 +13,6 @@ call :check icu %optional_vcpkg_dir%
 call :check intel-mkl %optional_vcpkg_dir%
 call :check libpsl %optional_vcpkg_dir%
 call :check lua %optional_vcpkg_dir%
-call :check onednn %optional_vcpkg_dir%
 call :check sentencepiece %optional_vcpkg_dir%
 
 goto :eof
