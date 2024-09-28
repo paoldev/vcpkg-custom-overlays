@@ -9,6 +9,7 @@ vcpkg_from_github(
         fix_narrowing.patch
         fix-uwp.patch
         fix-clang-dllimport.patch # workaround for https://github.com/microsoft/cpprestsdk/issues/1710
+        silence-stdext-checked-array-iterators-warning.patch
         my-windows-asio-unresolved-external-fix.patch #my-change: see https://github.com/microsoft/cpprestsdk/pull/1466
 )
 
