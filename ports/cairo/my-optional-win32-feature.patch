@@ -1,8 +1,8 @@
 diff --git a/meson.build b/meson.build
-index 2aea0b9..be52e5c 100644
+index 4051a7c..2892671 100644
 --- a/meson.build
 +++ b/meson.build
-@@ -495,7 +495,23 @@ if host_machine.system() == 'darwin' and not get_option('quartz').disabled()
+@@ -482,7 +482,23 @@ if host_machine.system() == 'darwin' and not get_option('quartz').disabled()
    endif
  endif
  
@@ -24,9 +24,9 @@ index 2aea0b9..be52e5c 100644
 +    }
 +  ]
 +elif host_machine.system() == 'windows'
-   add_project_arguments('-DWIN32_LEAN_AND_MEAN', '-DNOMINMAX', language: ['c', 'cpp'])
+   add_languages('cpp')
  
-   win32_extra_deps = [
+   add_project_arguments('-DWIN32_LEAN_AND_MEAN', '-DNOMINMAX', language: ['c', 'cpp'])
 diff --git a/meson_options.txt b/meson_options.txt
 index f481ef3..56e5128 100644
 --- a/meson_options.txt
