@@ -1,21 +1,14 @@
 diff --git a/portfile.cmake b/portfile.cmake
-index aa4f250..8d8e62f 100644
+index 0490c85..b223b65 100644
 --- a/portfile.cmake
 +++ b/portfile.cmake
-@@ -1,5 +1,5 @@
- if(NOT VCPKG_CMAKE_SYSTEM_NAME)
--    vcpkg_check_linkage(ONLY_STATIC_LIBRARY ONLY_STATIC_CRT)
-+    vcpkg_check_linkage(ONLY_STATIC_LIBRARY)	#my change
- endif()
- 
- vcpkg_from_github(
-@@ -10,6 +10,9 @@ vcpkg_from_github(
-     HEAD_REF master
+@@ -15,6 +15,9 @@ vcpkg_from_github(
+         protobuf.diff
  )
  
 +#my change: enable pkgconfig for Windows.
 +vcpkg_replace_string("${SOURCE_PATH}/CMakeLists.txt" "if (NOT MSVC)" "if (true)")
 +
+ string(COMPARE EQUAL "${VCPKG_LIBRARY_LINKAGE}" "dynamic" SPM_ENABLE_SHARED)
+ 
  vcpkg_cmake_configure(
-     SOURCE_PATH "${SOURCE_PATH}"
-     OPTIONS
