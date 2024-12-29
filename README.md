@@ -157,6 +157,11 @@ This library is released under the "MIT" license: https://github.com/OpenNMT/Tok
 
 For details, see the links above.
 
+### vcpkg-tool-clang
+
+New custom "clang" port to directly download and use recent 'clang-cl.exe' versions, to avoid patching 'vcpkg_find_acquire_program(CLANG).cmake' which is still on clang version '15.0.6'.  
+NB: only x64 windows version is downloaded.
+
 ## Triplets
 
 - x64-uwp-static-md-release
