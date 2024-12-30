@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 2ecf285..174f95d 100644
+index 2ecf285..209ff48 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -10,7 +10,7 @@ project(OpenNMTTokenizer)
@@ -11,7 +11,7 @@ index 2ecf285..174f95d 100644
  if(CMAKE_VERSION VERSION_LESS "3.7.0")
    set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
  endif()
-@@ -19,31 +19,27 @@ if(NOT CMAKE_BUILD_TYPE)
+@@ -19,31 +19,19 @@ if(NOT CMAKE_BUILD_TYPE)
    set(CMAKE_BUILD_TYPE Release)
  endif(NOT CMAKE_BUILD_TYPE)
  
@@ -26,25 +26,18 @@ index 2ecf285..174f95d 100644
 -  if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 -    set(SENTENCEPIECE_CXX_FLAGS "${SENTENCEPIECE_CXX_FLAGS} -Wno-stringop-overflow")
 -  endif()
-+#sentencepiece begin
-+find_package(sentencepiece)
-+if (sentencepiece-NOTFOUND)
-+  find_path(SENTENCEPIECE_INCLUDE_DIRS "sentencepiece_trainer.h" HINTS ${CURRENT_INSTALLED_DIR} PATH_SUFFIXES include REQUIRED)
-+  find_path(SENTENCEPIECE_INCLUDE_DIRS "sentencepiece_processor.h" HINTS ${SENTENCEPIECE_INCLUDE_DIRS} REQUIRED NO_DEFAULT_PATH)
-+  find_library(SENTENCEPIECE_RELEASE NAMES "sentencepiece.lib" HINTS ${CURRENT_INSTALLED_DIR} PATH_SUFFIXES lib REQUIRED)
-+  find_library(SENTENCEPIECE_TRAIN_RELEASE NAMES "sentencepiece_train.lib" HINTS ${CURRENT_INSTALLED_DIR} PATH_SUFFIXES lib REQUIRED)
-+  find_library(SENTENCEPIECE_DEBUG NAMES "sentencepiece.lib" HINTS ${CURRENT_INSTALLED_DIR} PATH_SUFFIXES debug/lib REQUIRED)
-+  find_library(SENTENCEPIECE_TRAIN_DEBUG NAMES "sentencepiece_train.lib" HINTS ${CURRENT_INSTALLED_DIR} PATH_SUFFIXES debug/lib REQUIRED)
-+  set(SENTENCEPIECE_LINK_LIBRARIES 
-+    optimized ${SENTENCEPIECE_RELEASE} ${SENTENCEPIECE_TRAIN_RELEASE}
-+    debug ${SENTENCEPIECE_DEBUG} ${SENTENCEPIECE_TRAIN_DEBUG})
- endif()
+-endif()
 -
 -set_target_properties(
 -  sentencepiece-static
 -  sentencepiece_train-static
 -  PROPERTIES COMPILE_FLAGS ${SENTENCEPIECE_CXX_FLAGS}
 -  )
++#sentencepiece begin
++find_package(PkgConfig REQUIRED)
++pkg_check_modules(SENTENCEPIECE REQUIRED sentencepiece)
++#explicitly get abseil 'flags' dependencies, not referenced by sentencepiece pkgconfig files.
++pkg_check_modules(ABSL_FLAGS REQUIRED absl_flags)
 +#sentencepiece end
  
  if(MSVC)
@@ -57,7 +50,7 @@ index 2ecf285..174f95d 100644
    endif()
    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4 /wd4251 /d2FH4-")
    set(ICU_COMPONENTS uc dt)
-@@ -63,7 +59,7 @@ set(INCLUDE_DIRECTORIES
+@@ -63,7 +51,7 @@ set(INCLUDE_DIRECTORIES
  
    PRIVATE
    ${ICU_INCLUDE_DIRS}
@@ -66,18 +59,19 @@ index 2ecf285..174f95d 100644
    )
  
  set(PUBLIC_HEADERS
-@@ -98,8 +94,7 @@ set(SOURCES
+@@ -98,8 +86,8 @@ set(SOURCES
  
  list(APPEND LINK_LIBRARIES
    ${ICU_LIBRARIES}
 -  sentencepiece-static
 -  sentencepiece_train-static
 +  ${SENTENCEPIECE_LINK_LIBRARIES}
++  ${ABSL_FLAGS_LINK_LIBRARIES}
    )
  
  if(COMMAND create_library)
 diff --git a/src/SentencePiece.cc b/src/SentencePiece.cc
-index 5c7cf5f..b613520 100644
+index 5c7cf5f..e92bc6d 100644
 --- a/src/SentencePiece.cc
 +++ b/src/SentencePiece.cc
 @@ -54,7 +54,7 @@ namespace onmt
@@ -85,7 +79,7 @@ index 5c7cf5f..b613520 100644
        throw std::invalid_argument("SentencePiece vocabulary restriction requires the tokenization "
                                    "to use \"spacer_annotate\" (same as spm_encode)");
 -    auto status = _processor->SetVocabulary(vocabulary);
-+    auto status = _processor->SetVocabulary(std::vector<std::string_view>(vocabulary.begin(), vocabulary.end()));
++    auto status = _processor->SetVocabulary(std::vector<absl::string_view>(vocabulary.begin(), vocabulary.end()));
      if (!status.ok())
        throw std::invalid_argument(status.ToString());
    }
