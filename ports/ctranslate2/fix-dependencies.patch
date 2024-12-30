@@ -1,8 +1,8 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index a32a45f..c84fddf 100644
+index 62fc336..d2c8bdb 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -80,7 +80,6 @@ if(MSVC)
+@@ -87,7 +87,6 @@ if(MSVC)
      if(CMAKE_VERSION VERSION_LESS "3.15.0")
        message(FATAL_ERROR "Use CMake 3.15 or later when setting BUILD_SHARED_LIBS to OFF")
      endif()
@@ -10,7 +10,7 @@ index a32a45f..c84fddf 100644
    endif()
    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4 /d2FH4-")
  else()
-@@ -88,7 +87,7 @@ else()
+@@ -95,7 +94,7 @@ else()
  endif()
  
  find_package(Threads)
@@ -19,7 +19,7 @@ index a32a45f..c84fddf 100644
  
  set(PRIVATE_INCLUDE_DIRECTORIES
    ${CMAKE_CURRENT_SOURCE_DIR}/src
-@@ -222,12 +221,7 @@ elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "(x86_64)|(amd64)|(AMD64)")
+@@ -243,12 +242,7 @@ elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "(x86_64)|(amd64)|(AMD64)")
    if(BUILD_SHARED_LIBS)
      set(CMAKE_POSITION_INDEPENDENT_CODE ON)
    endif()
@@ -33,7 +33,7 @@ index a32a45f..c84fddf 100644
  endif()
  
  if(ENABLE_CPU_DISPATCH)
-@@ -307,8 +301,13 @@ if(WITH_MKL)
+@@ -328,8 +322,13 @@ if(WITH_MKL)
      message(FATAL_ERROR "MKL include directory not found")
    endif()
  
@@ -43,12 +43,12 @@ index a32a45f..c84fddf 100644
 +  endif()
 +
    # Find MKL libraries.
--  find_library(MKL_CORE_LIBRARY NAMES mkl_core PATHS ${MKL_ROOT}/lib ${MKL_ROOT}/lib/intel64)
-+  find_library(MKL_CORE_LIBRARY NAMES mkl_core${MKL_LIB_SUFFIX} PATHS ${MKL_ROOT}/lib ${MKL_ROOT}/lib/intel64)
+-  find_library(MKL_CORE_LIBRARY NAMES mkl_core HINTS ${MKL_ROOT}/lib ${MKL_ROOT}/lib/intel64)
++  find_library(MKL_CORE_LIBRARY NAMES mkl_core${MKL_LIB_SUFFIX} HINTS ${MKL_ROOT}/lib ${MKL_ROOT}/lib/intel64)
    if(MKL_CORE_LIBRARY)
      get_filename_component(MKL_LIBRARY_DIR ${MKL_CORE_LIBRARY} DIRECTORY)
      message(STATUS "Found MKL library directory: ${MKL_LIBRARY_DIR}")
-@@ -319,8 +318,8 @@ if(WITH_MKL)
+@@ -340,8 +339,8 @@ if(WITH_MKL)
    add_definitions(-DCT2_WITH_MKL -DMKL_ILP64)
    if(WIN32)
      set(MKL_LIBRARIES
@@ -59,7 +59,7 @@ index a32a45f..c84fddf 100644
        )
    else()
      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m64")
-@@ -332,7 +331,7 @@ if(WITH_MKL)
+@@ -353,7 +352,7 @@ if(WITH_MKL)
  
    if(OPENMP_RUNTIME STREQUAL "INTEL")
      if(WIN32)
@@ -68,7 +68,7 @@ index a32a45f..c84fddf 100644
      else()
        list(APPEND MKL_LIBRARIES ${MKL_LIBRARY_DIR}/libmkl_intel_thread.a)
      endif()
-@@ -344,7 +343,7 @@ if(WITH_MKL)
+@@ -365,7 +364,7 @@ if(WITH_MKL)
      endif()
    elseif(OPENMP_RUNTIME STREQUAL "NONE")
      if(WIN32)
@@ -77,7 +77,7 @@ index a32a45f..c84fddf 100644
      else()
        list(APPEND MKL_LIBRARIES ${MKL_LIBRARY_DIR}/libmkl_sequential.a)
      endif()
-@@ -392,7 +391,7 @@ if (WITH_ACCELERATE)
+@@ -413,7 +412,7 @@ if (WITH_ACCELERATE)
  endif()
  
  if (WITH_OPENBLAS)
@@ -86,7 +86,7 @@ index a32a45f..c84fddf 100644
    if(OPENBLAS_INCLUDE_DIR)
      message(STATUS "Found OpenBLAS include directory: ${OPENBLAS_INCLUDE_DIR}")
    else()
-@@ -413,10 +412,7 @@ endif()
+@@ -434,10 +433,7 @@ endif()
  
  if (WITH_RUY)
    add_definitions(-DCT2_WITH_RUY)
@@ -98,7 +98,7 @@ index a32a45f..c84fddf 100644
    list(APPEND LIBRARIES ruy)
  endif()
  
-@@ -442,7 +438,7 @@ if (WITH_CUDA)
+@@ -463,7 +459,7 @@ if (WITH_CUDA)
  
    add_definitions(-DCT2_WITH_CUDA)
    if(MSVC)
@@ -107,7 +107,7 @@ index a32a45f..c84fddf 100644
        list(APPEND CUDA_NVCC_FLAGS "-Xcompiler=/MD$<$<CONFIG:Debug>:d>")
      else()
        list(APPEND CUDA_NVCC_FLAGS "-Xcompiler=/MT$<$<CONFIG:Debug>:d>")
-@@ -551,6 +547,10 @@ else()
+@@ -661,6 +657,10 @@ else()
    add_library(${PROJECT_NAME} ${SOURCES})
  endif()
  

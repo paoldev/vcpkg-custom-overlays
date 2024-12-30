@@ -1,5 +1,5 @@
 diff --git a/include/ctranslate2/utils.h b/include/ctranslate2/utils.h
-index 23c58cb..cd09bc0 100644
+index f1c122d..a7a8d1c 100644
 --- a/include/ctranslate2/utils.h
 +++ b/include/ctranslate2/utils.h
 @@ -30,7 +30,7 @@ namespace ctranslate2 {

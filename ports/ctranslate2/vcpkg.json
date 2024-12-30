@@ -1,6 +1,6 @@
 {
   "name": "ctranslate2",
-  "version": "4.1.1",
+  "version": "4.5.0",
   "description": "C++ and Python library for efficient inference with Transformer models",
   "homepage": "https://github.com/OpenNMT/CTranslate2",
   "license": "MIT",
