@@ -8,7 +8,7 @@ Param (
 )
 Set-StrictMode -Version Latest
 
-Function Get-VcpkgJson-Version 
+Function Get-VcpkgJson-Version
 {
     [CmdletBinding()]
     [OutputType([string])]

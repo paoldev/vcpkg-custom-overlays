@@ -7,16 +7,16 @@ setlocal
 
 set optional_vcpkg_dir=%1
 
-call :check cairo %optional_vcpkg_dir%
-call :check cpprestsdk %optional_vcpkg_dir%
-call :check icu %optional_vcpkg_dir%
-call :check intel-mkl %optional_vcpkg_dir%
-call :check libpsl %optional_vcpkg_dir%
-call :check lua %optional_vcpkg_dir%
-call :check sentencepiece %optional_vcpkg_dir%
+call :check_vcpkg cairo %optional_vcpkg_dir%
+call :check_vcpkg cpprestsdk %optional_vcpkg_dir%
+call :check_vcpkg icu %optional_vcpkg_dir%
+call :check_vcpkg intel-mkl %optional_vcpkg_dir%
+call :check_vcpkg libpsl %optional_vcpkg_dir%
+call :check_vcpkg lua %optional_vcpkg_dir%
+call :check_vcpkg sentencepiece %optional_vcpkg_dir%
 
 goto :eof
 
-:check
-powershell.exe -NoProfile -ExecutionPolicy Bypass "& {& '%~dp0check-for-update.ps1' %*}"
+:check_vcpkg
+powershell.exe -NoProfile -ExecutionPolicy Bypass "& {& '%~dp0check-for-vcpkg-update.ps1' %*}"
 exit /b 0
