@@ -2,39 +2,27 @@
 Param (
     [Parameter(Mandatory=$True, Position=0)]
     [string]$portName,
-	
-	[Parameter(Mandatory=$False, Position=1)]
+    
+    [Parameter(Mandatory=$False, Position=1)]
     [string]$localVcpkgDir = ""
 )
 Set-StrictMode -Version Latest
 
-if (-Not [string]::IsNullOrWhiteSpace($localVcpkgDir))
-{
-	$remoteUrl = $localVcpkgDir + "/ports/" + $portName + "/vcpkg.json"
-	$remoteJson = (Get-Content $remoteUrl -Raw) | ConvertFrom-Json
-}
-else
-{
-	$remoteUrl = "https://raw.githubusercontent.com/microsoft/vcpkg/master/ports/" + $portName + "/vcpkg.json"
-	$remoteJson = (Invoke-WebRequest $remoteUrl) | ConvertFrom-Json
-}
-
-$localUrl = $PSScriptRoot + "/../ports/" + $portName + "/vcpkg.json"
-$localJson = (Get-Content $localUrl -Raw) | ConvertFrom-Json
-
 Function Get-VcpkgJson-Version 
 {
-	[CmdletBinding()]
+    [CmdletBinding()]
     [OutputType([string])]
     Param (
-        [Parameter(Mandatory=$True,ValueFromPipeline=$True)]
-        [Object]$JsonFile
+        [Parameter(Mandatory=$True)]
+        [Object]$JsonFile,
+
+        [switch]$AppendPortVersion
     )
     Begin {
         $Version = [string]@{}
-		$PortVersion = [string]@{}
+        $PortVersion = [string]@{}
     }
-	Process {
+    Process {
 
         if ([bool]($JsonFile.PSobject.Properties.name -match "^version$"))
         {
@@ -65,21 +53,42 @@ Function Get-VcpkgJson-Version
         {
             $PortVersion = '0'
         }
-	}
+    }
     End {
 
-        $Version + '#' + $PortVersion
+        if ($AppendPortVersion)
+        {
+            $Version + '#' + $PortVersion
+        }
+        else
+        {
+            $Version
+        }
     }
 }
 
-$remoteVersion = Get-VcpkgJson-Version $remoteJson
-$localVersion = Get-VcpkgJson-Version $localJson
-
-if ($remoteVersion -eq $localVersion)
+if (-Not [string]::IsNullOrWhiteSpace($localVcpkgDir))
 {
-	Write-Host "$($portName): same version $($localVersion)"
+    $remoteUrl = $localVcpkgDir + "/ports/" + $portName + "/vcpkg.json"
+    $remoteJson = (Get-Content $remoteUrl -Raw) | ConvertFrom-Json
 }
 else
 {
-	Write-Warning "$($portName): different versions: local $($localVersion) - remote $($remoteVersion) - Update needed?"
+    $remoteUrl = "https://raw.githubusercontent.com/microsoft/vcpkg/master/ports/" + $portName + "/vcpkg.json"
+    $remoteJson = (Invoke-WebRequest $remoteUrl) | ConvertFrom-Json
+}
+
+$localUrl = $PSScriptRoot + "/../ports/" + $portName + "/vcpkg.json"
+$localJson = (Get-Content $localUrl -Raw) | ConvertFrom-Json
+
+$remoteVersion = Get-VcpkgJson-Version $remoteJson -AppendPortVersion
+$localVersion = Get-VcpkgJson-Version $localJson -AppendPortVersion
+
+if ($remoteVersion -eq $localVersion)
+{
+    Write-Host "$($portName): same version $($localVersion)"
+}
+else
+{
+    Write-Warning "$($portName): different versions: local $($localVersion) - remote $($remoteVersion) - Update needed?"
 }
