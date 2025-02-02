@@ -10,6 +10,7 @@ set optional_vcpkg_dir=%1
 echo.
 echo Check ports against vcpkg repository
 echo.
+
 call :check_vcpkg cairo %optional_vcpkg_dir%
 call :check_vcpkg cpprestsdk %optional_vcpkg_dir%
 call :check_vcpkg icu %optional_vcpkg_dir%
@@ -26,6 +27,13 @@ call :check_github ctranslate2 -UseReleaseTag
 call :check_github ruy
 call :check_github tokenizer -UseReleaseTag
 
+echo.
+echo Check tools ports against github repository
+echo.
+
+rem Use 'tag-${version}' with single quotes to pass powershell parameters containing '$'.
+call :check_tools vcpkg-tool-clang 'llvmorg-${version}'
+
 goto :eof
 
 :check_vcpkg
@@ -37,5 +45,13 @@ if "%optional_vcpkg_dir%" neq "" (
 echo Ignoring '%1' port check since it can't be run locally.
 ) else (
 powershell.exe -NoProfile -ExecutionPolicy Bypass "& {& '%~dp0check-for-github-update.ps1' %*}"
+)
+exit /b 0
+
+:check_tools
+if "%optional_vcpkg_dir%" neq "" (
+echo Ignoring '%1' port check since it can't be run locally.
+) else (
+powershell.exe -NoProfile -ExecutionPolicy Bypass "& {& '%~dp0check-for-tools-update.ps1' %*}"
 )
 exit /b 0
