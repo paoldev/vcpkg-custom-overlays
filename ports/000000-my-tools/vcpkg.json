@@ -4,5 +4,6 @@
   "description": "Download some tools",
   "supports": "windows",
   "dependencies": [
+    "vcpkg-tool-clang"
   ]
 }

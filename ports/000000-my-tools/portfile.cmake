@@ -9,3 +9,6 @@ vcpkg_find_acquire_program(BISON)
 vcpkg_find_acquire_program(GPERF)
 vcpkg_find_acquire_program(PYTHON2)
 vcpkg_find_acquire_program(PYTHON3)
+
+#custom tools ports
+vcpkg_find_acquire_program(CLANG)
