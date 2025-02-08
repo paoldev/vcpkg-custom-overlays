@@ -8,83 +8,25 @@ Param (
 )
 Set-StrictMode -Version Latest
 
-Function Get-VcpkgJson-Version
-{
-    [CmdletBinding()]
-    [OutputType([string])]
-    Param (
-        [Parameter(Mandatory=$True)]
-        [Object]$JsonFile,
+Import-Module '.\VcpkgFunctionsLibrary.psm1'
 
-        [switch]$AppendPortVersion
-    )
-    Begin {
-        $Version = [string]@{}
-        $PortVersion = [string]@{}
-    }
-    Process {
-
-        if ([bool]($JsonFile.PSobject.Properties.name -match "^version$"))
-        {
-            $Version = $JsonFile.version
-        }
-        elseif ([bool]($JsonFile.PSobject.Properties.name -match "^version-date$"))
-        {
-            $Version = $JsonFile.'version-date'
-        }
-        elseif ([bool]($JsonFile.PSobject.Properties.name -match "^version-string$"))
-        {
-            $Version = $JsonFile.'version-string'
-        }
-        elseif ([bool]($JsonFile.PSobject.Properties.name -match "^version-semver$"))
-        {
-            $Version = $JsonFile.'version-semver'
-        }
-        else
-        {
-            throw "Missing version field."
-        }
-
-        if ([bool]($JsonFile.PSobject.Properties.name -match "^port-version$"))
-        {
-            $PortVersion = $JsonFile.'port-version'
-        }
-        else
-        {
-            $PortVersion = '0'
-        }
-    }
-    End {
-
-        if ($AppendPortVersion)
-        {
-            $Version + '#' + $PortVersion
-        }
-        else
-        {
-            $Version
-        }
-    }
-}
-
+$localUrl = $PSScriptRoot + "/../ports/" + $portName + "/vcpkg.json"
 if (-Not [string]::IsNullOrWhiteSpace($localVcpkgDir))
 {
     $remoteUrl = $localVcpkgDir + "/ports/" + $portName + "/vcpkg.json"
-    $remoteJson = (Get-Content $remoteUrl -Raw) | ConvertFrom-Json
 }
 else
 {
     $remoteUrl = "https://raw.githubusercontent.com/microsoft/vcpkg/master/ports/" + $portName + "/vcpkg.json"
-    $remoteJson = (Invoke-WebRequest $remoteUrl) | ConvertFrom-Json
 }
 
-$localUrl = $PSScriptRoot + "/../ports/" + $portName + "/vcpkg.json"
-$localJson = (Get-Content $localUrl -Raw) | ConvertFrom-Json
+$localJson = Get-VcpkgJsonInfo $localUrl
+$remoteJson = Get-VcpkgJsonInfo $remoteUrl
 
-$remoteVersion = Get-VcpkgJson-Version $remoteJson -AppendPortVersion
-$localVersion = Get-VcpkgJson-Version $localJson -AppendPortVersion
+$localVersion = $localJson.version + "#" + $localJson.portversion
+$remoteVersion = $remoteJson.version + "#" + $remoteJson.portversion
 
-if ($remoteVersion -eq $localVersion)
+if ($localVersion -eq $remoteVersion)
 {
     Write-Host "$($portName): same version $($localVersion)"
 }
