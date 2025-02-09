@@ -23,16 +23,18 @@ echo.
 echo Check ports against github repository
 echo.
 
-call :check_github ctranslate2 -UseReleaseTag
-call :check_github ruy
-call :check_github tokenizer -UseReleaseTag
+call :check_github_repo ctranslate2 -UseReleaseTag
+call :check_github_repo ruy
+call :check_github_repo tokenizer -UseReleaseTag
 
 echo.
-echo Check tools ports against github repository
+echo Check ports against their latest github repository tags
 echo.
 
 rem Use 'tag-${version}' with single quotes to pass powershell parameters containing '$'.
-call :check_tools vcpkg-tool-clang 'llvmorg-${version}'
+rem Add overrideRepo parameter string (such as 'repoowner/reponame') if vcpkg.json 'homepage' field doesn't reference it as https://github.com/repoowner/reponame.
+rem call :check_github_tag vcpkg-tool-clang 'llvmorg-${version}' 'llvm/llvm-project'
+call :check_github_tag vcpkg-tool-clang 'llvmorg-${version}'
 
 goto :eof
 
@@ -40,18 +42,18 @@ goto :eof
 powershell.exe -NoProfile -ExecutionPolicy Bypass "& {& '%~dp0check-for-vcpkg-update.ps1' %*}"
 exit /b 0
 
-:check_github
+:check_github_repo
 if "%optional_vcpkg_dir%" neq "" (
 echo Ignoring '%1' port check since it can't be run locally.
 ) else (
-powershell.exe -NoProfile -ExecutionPolicy Bypass "& {& '%~dp0check-for-github-update.ps1' %*}"
+powershell.exe -NoProfile -ExecutionPolicy Bypass "& {& '%~dp0check-for-github-repo-update.ps1' %*}"
 )
 exit /b 0
 
-:check_tools
+:check_github_tag
 if "%optional_vcpkg_dir%" neq "" (
 echo Ignoring '%1' port check since it can't be run locally.
 ) else (
-powershell.exe -NoProfile -ExecutionPolicy Bypass "& {& '%~dp0check-for-tools-update.ps1' %*}"
+powershell.exe -NoProfile -ExecutionPolicy Bypass "& {& '%~dp0check-for-github-tag-update.ps1' %*}"
 )
 exit /b 0

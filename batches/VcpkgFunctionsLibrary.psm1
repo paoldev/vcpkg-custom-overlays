@@ -3,42 +3,50 @@
 #
 # Author: paoldev
 #
-# Few helpers to export some vcpkg.json, portfile.cmake and github repos infos.
+# Few helpers to export some vcpkg.json, portfile.cmake and github repos info.
 #
 
 Function Get-FileContent
 {
-	[CmdletBinding()]
+    [CmdletBinding()]
     [OutputType([Object])]
     Param (
         [Parameter(Mandatory=$True)]
         [string]$FilePathOrUrl,
-		
-		[switch]$ToJsonObject
+        
+        [switch]$ToJsonObject
     )
-	Begin {
-		$FileContent = [string]@{}
+    Begin {
+        $FileContent = [string]@{}
     }
-	Process {
-		if ($FilePathOrUrl.StartsWith("http://") -or $FilePathOrUrl.StartsWith("https://"))
-		{
-			$FileContent = Invoke-WebRequest $FilePathOrUrl
-		}
-		else
-		{
-			$FileContent = Get-Content $FilePathOrUrl -Raw
-		}
-	}
-	End {
-		
-		if ($ToJsonObject)
-		{
-			ConvertFrom-Json $FileContent
-		}
-		else
-		{
-			$FileContent
-		}
+    Process {
+        Try
+        {
+            if ($FilePathOrUrl.StartsWith("http://") -or $FilePathOrUrl.StartsWith("https://"))
+            {
+                $FileContent = Invoke-WebRequest $FilePathOrUrl
+            }
+            else
+            {
+                $FileContent = Get-Content $FilePathOrUrl -Raw
+            }
+        }
+        Catch
+        {
+            Write-Host $_
+            throw "Can't get file content: file path or url '" + $FilePathOrUrl +"' may be invalid."
+        }
+    }
+    End {
+        
+        if ($ToJsonObject)
+        {
+            ConvertFrom-Json $FileContent
+        }
+        else
+        {
+            $FileContent
+        }
     }
 }
 
@@ -51,22 +59,22 @@ Function Get-VcpkgJsonInfo
         [string]$JsonPathOrUrl
     )
     Begin {
-		$Name = [string]@{}
+        $Name = [string]@{}
         $Version = [string]@{}
         $PortVersion = [string]@{}
-		$Homepage = [string]@{}
+        $Homepage = [string]@{}
     }
     Process {
-		
-		$JsonObject = Get-FileContent $JsonPathOrUrl -ToJsonObject
-		
-		if ([bool]($JsonObject.PSobject.Properties.name -match "^name$"))
+        
+        $JsonObject = Get-FileContent $JsonPathOrUrl -ToJsonObject
+        
+        if ([bool]($JsonObject.PSobject.Properties.name -match "^name$"))
         {
             $Name = $JsonObject.name
         }
         else
         {
-            throw "Missing 'name' field."
+            throw "Missing 'name' field in vcpkg.json."
         }
 
         if ([bool]($JsonObject.PSobject.Properties.name -match "^version$"))
@@ -87,7 +95,7 @@ Function Get-VcpkgJsonInfo
         }
         else
         {
-            throw "Missing 'version', 'version-date', 'version-string', 'version-semver' fields."
+            throw "Missing 'version', 'version-date', 'version-string', 'version-semver' fields in vcpkg.json."
         }
 
         if ([bool]($JsonObject.PSobject.Properties.name -match "^port-version$"))
@@ -98,8 +106,8 @@ Function Get-VcpkgJsonInfo
         {
             $PortVersion = '0'
         }
-		
-		if ([bool]($JsonObject.PSobject.Properties.name -match "^homepage$"))
+        
+        if ([bool]($JsonObject.PSobject.Properties.name -match "^homepage$"))
         {
             $Homepage = $JsonObject.homepage
         }
@@ -110,11 +118,11 @@ Function Get-VcpkgJsonInfo
     }
     End {
 
-		@{
-			name=$Name
+        @{
+            name=$Name
             version=$Version
             portversion=$PortVersion
-			homepage=$Homepage
+            homepage=$Homepage
         }
     }
 }
@@ -139,7 +147,7 @@ Function Get-GithubLatestReleaseVersion
         }
         else
         {
-            throw "Missing 'tag_name' field."
+            throw "Missing 'tag_name' field in repo tag list."
         }
     }
     End {
@@ -170,7 +178,7 @@ Function Get-GithubLatestCommitShaAndDate
         }
         else
         {
-            throw "Missing 'sha' field."
+            throw "Missing 'sha' field in repo latest commit info."
         }
         
         if ([bool]($remoteLatestCommit.PSobject.Properties.name -match "^commit$"))
@@ -194,12 +202,12 @@ Function Get-GithubLatestCommitShaAndDate
             }
             else
             {
-                throw "Missing both 'committer' and 'author' fields."
+                throw "Missing both 'committer' and 'author' fields in repo latest commit info."
             }
             
             if ($date -eq "")
             {
-                throw "Missing 'date' field in both 'committer' and 'author' fields."
+                throw "Missing 'date' field in both 'committer' and 'author' fields in repo latest commit info."
             }
             else
             {
@@ -208,12 +216,12 @@ Function Get-GithubLatestCommitShaAndDate
         }
         else
         {
-            throw "Missing 'commit' field."
+            throw "Missing 'commit' field in repo latest commit info."
         }
     }
     End {
 
-		@{
+        @{
             sha=$sha
             date=$date
         }
