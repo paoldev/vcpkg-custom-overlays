@@ -1,5 +1,5 @@
 diff --git a/portfile.cmake b/portfile.cmake
-index 26015d2..9fac11b 100644
+index cfafa65..d724017 100644
 --- a/portfile.cmake
 +++ b/portfile.cmake
 @@ -1,3 +1,11 @@
@@ -11,11 +11,11 @@ index 26015d2..9fac11b 100644
 +endif()
 +#my-change end
 +
- if(NOT VCPKG_TARGET_IS_WINDOWS)
-     message(WARNING "${PORT} currently requires the following programs from the system package manager:
-     autoconf automake autoconf-archive
-@@ -39,6 +47,13 @@ vcpkg_extract_source_archive(SOURCE_PATH
-         mingw-strict-ansi.diff # backport of https://github.com/unicode-org/icu/pull/3003
+ string(REGEX MATCH "^[0-9]*" ICU_VERSION_MAJOR "${VERSION}")
+ string(REPLACE "." "_" VERSION2 "${VERSION}")
+ string(REPLACE "." "-" VERSION3 "${VERSION}")
+@@ -25,6 +33,13 @@ vcpkg_extract_source_archive(SOURCE_PATH
+         cleanup_msvc.patch
  )
  
 +#my-change begin: fix 'File name too long' error during install-icu phase, while executing 'ln -s' command.
@@ -29,10 +29,10 @@ index 26015d2..9fac11b 100644
  set(ENV{PYTHON} "${PYTHON3}")
  
 diff --git a/vcpkg.json b/vcpkg.json
-index 23c96f0..c8e261b 100644
+index b4ff152..c359426 100644
 --- a/vcpkg.json
 +++ b/vcpkg.json
-@@ -18,6 +18,18 @@
+@@ -22,6 +22,18 @@
      "tools": {
        "description": "Build tools",
        "supports": "!uwp"
