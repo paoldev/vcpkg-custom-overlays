@@ -57,7 +57,12 @@ Custom icu port with Windows SDK ICU support, for both windows-desktop and uwp p
 Custom intel-mkl port.  
 
 New feature:  
-- updated dynamic crt dependency, when used by static libraries compiled with MultiThreaded\<Debug\>DLL crt flags.
+- updated dynamic crt dependency, when used by static libraries compiled with MultiThreaded\<Debug\>DLL crt flags (/MD(d)).  
+  See <https://www.intel.com/content/www/us/en/docs/onemkl/developer-guide-windows/2023-0/linking-with-compiler-run-time-libraries.html>:
+  > /MT for linking with static Intel® oneAPI Math Kernel Library libraries  
+  /MD for linking with dynamic Intel® oneAPI Math Kernel Library libraries  
+
+  I got unexpected runtime results when using "x64-windows-static-md" triplet that mixed "/MD static libraries" with official "/MT static intel-mkl" port.
 
 ### libpsl
 

@@ -1,5 +1,5 @@
 diff --git a/portfile.cmake b/portfile.cmake
-index c054aa1..3c1fe47 100644
+index d077ee0..a859ff4 100644
 --- a/portfile.cmake
 +++ b/portfile.cmake
 @@ -103,7 +103,7 @@ if(VCPKG_TARGET_IS_WINDOWS)
