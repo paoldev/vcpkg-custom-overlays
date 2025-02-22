@@ -6,11 +6,11 @@
   "license": "MIT",
   "supports": "windows & x64",
   "dependencies": [
-    "spdlog",
     {
       "name": "cpu-features",
       "platform": "!arm"
     },
+    "spdlog",
     {
       "name": "vcpkg-cmake",
       "host": true
@@ -20,34 +20,12 @@
       "host": true
     }
   ],
-  "default-features": [ "cpu-dispatch" ],
+  "default-features": [
+    "cpu-dispatch"
+  ],
   "features": {
     "cpu-dispatch": {
       "description": "Compile CPU kernels for multiple ISA and dispatch at runtime"
-    },
-    "mkl": {
-      "description": "Compile with Intel MKL backend",
-      "dependencies": [
-        "intel-mkl"
-      ]
-    },
-    "dnnl": {
-      "description": "Compile with DNNL backend",
-      "dependencies": [
-        "onednn"
-      ]
-    },
-    "openblas": {
-      "description": "Compile with OpenBLAS backend",
-      "dependencies": [
-        "openblas"
-      ]
-    },
-    "ruy": {
-      "description": "Compile with Ruy backend",
-      "dependencies": [
-        "ruy"
-      ]
     },
     "cuda": {
       "description": "Compile with CUDA backend",
@@ -65,6 +43,30 @@
           ]
         },
         "cudnn"
+      ]
+    },
+    "dnnl": {
+      "description": "Compile with DNNL backend",
+      "dependencies": [
+        "onednn"
+      ]
+    },
+    "mkl": {
+      "description": "Compile with Intel MKL backend",
+      "dependencies": [
+        "intel-mkl"
+      ]
+    },
+    "openblas": {
+      "description": "Compile with OpenBLAS backend",
+      "dependencies": [
+        "openblas"
+      ]
+    },
+    "ruy": {
+      "description": "Compile with Ruy backend",
+      "dependencies": [
+        "ruy"
       ]
     }
   }

@@ -6,9 +6,9 @@
   "license": "MIT",
   "supports": "windows",
   "dependencies": [
-	"icu",
-	"sentencepiece",
-	{
+    "icu",
+    "sentencepiece",
+    {
       "name": "vcpkg-cmake",
       "host": true
     }

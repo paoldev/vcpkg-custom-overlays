@@ -2,9 +2,9 @@
   "name": "ruy",
   "version-date": "2024-12-20",
   "description": "The ruy matrix multiplication library",
-  "supports": "!uwp",
   "homepage": "https://github.com/google/ruy",
   "license": "Apache-2.0",
+  "supports": "!uwp",
   "dependencies": [
     "cpuinfo",
     {
@@ -15,8 +15,5 @@
       "name": "vcpkg-cmake-config",
       "host": true
     }
-  ],
-  "default-features": [ ],
-  "features": {
-  }
+  ]
 }

@@ -19,10 +19,6 @@
     }
   ],
   "features": {
-    "tools": {
-      "description": "Build tools",
-      "supports": "!uwp"
-    },
     "ms-icu": {
       "description": "Use MS-ICU on Windows",
       "supports": "windows",
@@ -34,6 +30,10 @@
           ]
         }
       ]
+    },
+    "tools": {
+      "description": "Build tools",
+      "supports": "!uwp"
     }
   }
 }

@@ -29,14 +29,13 @@ index cfafa65..d724017 100644
  set(ENV{PYTHON} "${PYTHON3}")
  
 diff --git a/vcpkg.json b/vcpkg.json
-index b4ff152..c359426 100644
+index b4ff152..af2f967 100644
 --- a/vcpkg.json
 +++ b/vcpkg.json
-@@ -22,6 +22,18 @@
-     "tools": {
-       "description": "Build tools",
-       "supports": "!uwp"
-+    },
+@@ -19,6 +19,18 @@
+     }
+   ],
+   "features": {
 +    "ms-icu": {
 +      "description": "Use MS-ICU on Windows",
 +      "supports": "windows",
@@ -48,6 +47,7 @@ index b4ff152..c359426 100644
 +          ]
 +        }
 +      ]
-     }
-   }
- }
++    },
+     "tools": {
+       "description": "Build tools",
+       "supports": "!uwp"
