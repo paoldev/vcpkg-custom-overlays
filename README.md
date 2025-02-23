@@ -6,9 +6,40 @@ This repository contains some custom ports I used / use for few projects of mine
 
 ## How to install and use
 
+### As overlay folder
+
 > 1. git clone https://github.com/paoldev/vcpkg-custom-overlays
 > 2. cd vcpkg
 > 3. vcpkg install --overlay-ports path/to/vcpkg-custom-overlays/ports --overlay-triplets path/to/vcpkg-custom-overlays/triplets --triplet [triplet to use] [packages to install]
+
+### As vcpkg git registry
+
+vcpkg-configuration.json:
+
+> {  
+> &nbsp;&nbsp;"registries": [  
+> &nbsp;&nbsp;&nbsp;&nbsp;{  
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"kind": "git",  
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"baseline": "<commit_sha>",  
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"repository": "https://github.com/paoldev/vcpkg-custom-overlays.git",  
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"packages": [  
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"000000-my-tools",  
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"cairo",  
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"cpprestsdk",  
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"ctranslate2",  
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"icu",  
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"intel-mkl",  
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"libpsl",  
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"lua",  
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"ms-icu",  
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"ruy",  
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"sentencepiece",  
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"tokenizer",  
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"vcpkg-tool-clang"  
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;]  
+> &nbsp;&nbsp;&nbsp;&nbsp;}  
+> &nbsp;&nbsp;]  
+> }
 
 ## Ports
 
