@@ -10,7 +10,7 @@
     },
     "cpprestsdk": {
       "baseline": "2.10.19",
-      "port-version": 2
+      "port-version": 3
     },
     "ctranslate2": {
       "baseline": "4.5.0",

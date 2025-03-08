@@ -37,39 +37,39 @@ index 0000000..283792a
 +-#endif //  !defined(CPPREST_EXCLUDE_WEBSOCKETS) || !defined(_WIN32)
 ++#endif //  !defined(_WIN32) || !defined(CPPREST_EXCLUDE_WEBSOCKETS) || defined(CPPREST_FORCE_HTTP_CLIENT_ASIO) || defined(CPPREST_FORCE_HTTP_LISTENER_ASIO)
 diff --git a/portfile.cmake b/portfile.cmake
-index 7ed7db9..33e258e 100644
+index 9e8e1aa..f964b0a 100644
 --- a/portfile.cmake
 +++ b/portfile.cmake
-@@ -10,6 +10,7 @@ vcpkg_from_github(
-         fix-uwp.patch
+@@ -11,6 +11,7 @@ vcpkg_from_github(
          fix-clang-dllimport.patch # workaround for https://github.com/microsoft/cpprestsdk/issues/1710
          silence-stdext-checked-array-iterators-warning.patch
-+        my-windows-asio-unresolved-external-fix.patch #my-change: see https://github.com/microsoft/cpprestsdk/pull/1466
+         fix-asio-error.patch
++		my-windows-asio-unresolved-external-fix.patch #my-change: see https://github.com/microsoft/cpprestsdk/pull/1466
  )
  
- set(OPTIONS)
-@@ -20,6 +21,14 @@ if(NOT VCPKG_TARGET_IS_UWP)
-         -DWEBSOCKETPP_CONFIG_VERSION=${WEBSOCKETPP_PATH})
- endif()
+ vcpkg_check_features(
+@@ -21,6 +22,14 @@ vcpkg_check_features(
+       websockets CPPREST_EXCLUDE_WEBSOCKETS
+ )
  
 +#my-change begin
 +if("windows-asio" IN_LIST FEATURES)
-+    list(APPEND OPTIONS
++    list(APPEND FEATURE_OPTIONS
 +        -DCPPREST_HTTP_CLIENT_IMPL=asio
 +        -DCPPREST_HTTP_LISTENER_IMPL=asio)
 +endif()
 +#my-change end
 +
- vcpkg_check_features(
-     OUT_FEATURE_OPTIONS FEATURE_OPTIONS
-     INVERTED_FEATURES
+ if(VCPKG_TARGET_IS_UWP)
+     set(configure_opts WINDOWS_USE_MSBUILD)
+ endif()
 diff --git a/vcpkg.json b/vcpkg.json
-index 5250a30..80f2338 100644
+index 8d26279..a60da72 100644
 --- a/vcpkg.json
 +++ b/vcpkg.json
-@@ -112,6 +112,19 @@
-           "platform": "!uwp"
-         }
+@@ -80,6 +80,19 @@
+       "dependencies": [
+         "zlib"
        ]
 +    },
 +    "windows-asio": {

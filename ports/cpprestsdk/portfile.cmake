@@ -10,24 +10,9 @@ vcpkg_from_github(
         fix-uwp.patch
         fix-clang-dllimport.patch # workaround for https://github.com/microsoft/cpprestsdk/issues/1710
         silence-stdext-checked-array-iterators-warning.patch
-        my-windows-asio-unresolved-external-fix.patch #my-change: see https://github.com/microsoft/cpprestsdk/pull/1466
+        fix-asio-error.patch
+		my-windows-asio-unresolved-external-fix.patch #my-change: see https://github.com/microsoft/cpprestsdk/pull/1466
 )
-
-set(OPTIONS)
-if(NOT VCPKG_TARGET_IS_UWP)
-    SET(WEBSOCKETPP_PATH "${CURRENT_INSTALLED_DIR}/share/websocketpp")
-    list(APPEND OPTIONS
-        -DWEBSOCKETPP_CONFIG=${WEBSOCKETPP_PATH}
-        -DWEBSOCKETPP_CONFIG_VERSION=${WEBSOCKETPP_PATH})
-endif()
-
-#my-change begin
-if("windows-asio" IN_LIST FEATURES)
-    list(APPEND OPTIONS
-        -DCPPREST_HTTP_CLIENT_IMPL=asio
-        -DCPPREST_HTTP_LISTENER_IMPL=asio)
-endif()
-#my-change end
 
 vcpkg_check_features(
     OUT_FEATURE_OPTIONS FEATURE_OPTIONS
@@ -37,6 +22,14 @@ vcpkg_check_features(
       websockets CPPREST_EXCLUDE_WEBSOCKETS
 )
 
+#my-change begin
+if("windows-asio" IN_LIST FEATURES)
+    list(APPEND FEATURE_OPTIONS
+        -DCPPREST_HTTP_CLIENT_IMPL=asio
+        -DCPPREST_HTTP_LISTENER_IMPL=asio)
+endif()
+#my-change end
+
 if(VCPKG_TARGET_IS_UWP)
     set(configure_opts WINDOWS_USE_MSBUILD)
 endif()
@@ -45,7 +38,6 @@ vcpkg_cmake_configure(
     SOURCE_PATH "${SOURCE_PATH}/Release"
     ${configure_opts}
     OPTIONS
-        ${OPTIONS}
         ${FEATURE_OPTIONS}
         -DBUILD_TESTS=OFF
         -DBUILD_SAMPLES=OFF
