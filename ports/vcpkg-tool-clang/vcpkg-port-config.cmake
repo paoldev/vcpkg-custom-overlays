@@ -5,7 +5,7 @@ set(version @VERSION@)
 set(progname clang)
 set(archive "LLVM-${version}-win64.exe")
 set(url "https://github.com/llvm/llvm-project/releases/download/llvmorg-${version}/LLVM-${version}-win64.exe")
-set(hash 04eece3e10da85cacba397609245f6761b0b56d6743b56e25f984db252cdd26dddc13a3e4381c394dd381769832a6bc5cf41ab04bd70fd5526958ff08c1bd24d)
+set(hash d90ab2990d787b681b91ca11ae8ac118d28967105790945674c07a1cbd4d7fa608677c199f8538a54387866edde40814e031bd8c9551f6aa7c80620a3ee0515f)
 set(output_path "${DOWNLOADS}/tools/clang/clang-${version}")
 
 find_program(CLANG clang PATHS "${output_path}/bin")
