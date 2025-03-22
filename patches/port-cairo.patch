@@ -60,10 +60,10 @@ index 0000000..b6b4076
 +     'cairo-script-surface.c',
 +   ],
 diff --git a/portfile.cmake b/portfile.cmake
-index d71cec3..9520396 100644
+index e7101c2..e561356 100644
 --- a/portfile.cmake
 +++ b/portfile.cmake
-@@ -12,9 +12,19 @@ vcpkg_from_gitlab(
+@@ -14,9 +14,17 @@ vcpkg_from_gitlab(
      PATCHES
          cairo_add_lzo_feature_option.patch
          msvc-convenience.diff
@@ -75,8 +75,6 @@ index d71cec3..9520396 100644
 +if(VCPKG_TARGET_IS_UWP)
 +    #disable gdi and dwrite stuff: feature added by 'my-optional-win32-feature.patch'
 +    list(APPEND OPTIONS -Dwin32=disabled)
-+    #inject WindowsApp.lib, to fix meson 'cc.links()' tests (see errors in config-x64-uwp-debug-meson-log.txt.log).
-+    set(VCPKG_LINKER_FLAGS "${VCPKG_LINKER_FLAGS} WindowsApp.lib")
 +endif()
 +#my-change end
 +
@@ -84,10 +82,10 @@ index d71cec3..9520396 100644
      list(APPEND OPTIONS -Dfontconfig=enabled)
  else()
 diff --git a/vcpkg.json b/vcpkg.json
-index 0e3f0b9..6d92b95 100644
+index 53d118e..7f8a1a7 100644
 --- a/vcpkg.json
 +++ b/vcpkg.json
-@@ -4,7 +4,7 @@
+@@ -5,7 +5,7 @@
    "description": "Cairo is a 2D graphics library with support for multiple output devices. Currently supported output targets include the X Window System (via both Xlib and XCB), Quartz, Win32, image buffers, PostScript, PDF, and SVG file output. Experimental backends include OpenGL, BeOS, OS/2, and DirectFB.",
    "homepage": "https://cairographics.org",
    "license": "LGPL-2.1-only OR MPL-1.1",
@@ -96,7 +94,7 @@ index 0e3f0b9..6d92b95 100644
    "dependencies": [
      "dirent",
      "expat",
-@@ -18,12 +18,16 @@
+@@ -19,12 +19,16 @@
      "zlib"
    ],
    "default-features": [

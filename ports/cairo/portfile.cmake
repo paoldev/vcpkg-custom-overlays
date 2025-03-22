@@ -3,6 +3,8 @@ if(VCPKG_TARGET_IS_WINDOWS AND NOT VCPKG_TARGET_IS_MINGW)
     list(APPEND EXTRA_PATCHES fix_clang-cl_build.patch)
 endif()
 
+list(APPEND EXTRA_PATCHES dw-extra.patch)
+
 vcpkg_from_gitlab(
     OUT_SOURCE_PATH SOURCE_PATH
     GITLAB_URL https://gitlab.freedesktop.org
@@ -20,8 +22,6 @@ vcpkg_from_gitlab(
 if(VCPKG_TARGET_IS_UWP)
     #disable gdi and dwrite stuff: feature added by 'my-optional-win32-feature.patch'
     list(APPEND OPTIONS -Dwin32=disabled)
-    #inject WindowsApp.lib, to fix meson 'cc.links()' tests (see errors in config-x64-uwp-debug-meson-log.txt.log).
-    set(VCPKG_LINKER_FLAGS "${VCPKG_LINKER_FLAGS} WindowsApp.lib")
 endif()
 #my-change end
 
