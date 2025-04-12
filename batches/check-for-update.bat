@@ -5,6 +5,8 @@ rem	 If "optional_vcpkg_dir" is not specified, the check is done against the vcp
 
 setlocal
 
+pushd %~dp0
+
 set optional_vcpkg_dir=%1
 
 echo.
@@ -35,6 +37,8 @@ rem Use 'tag-${version}' with single quotes to pass powershell parameters contai
 rem Add overrideRepo parameter string (such as 'repoowner/reponame') if vcpkg.json 'homepage' field doesn't reference it as https://github.com/repoowner/reponame.
 rem call :check_github_tag vcpkg-tool-clang 'llvmorg-${version}' 'llvm/llvm-project'
 call :check_github_tag vcpkg-tool-clang 'llvmorg-${version}'
+
+popd
 
 goto :eof
 
