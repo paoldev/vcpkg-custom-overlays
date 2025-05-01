@@ -43,14 +43,14 @@ popd
 goto :eof
 
 :check_vcpkg
-powershell.exe -NoProfile -ExecutionPolicy Bypass "& {& '%~dp0check-for-vcpkg-update.ps1' %*}"
+powershell.exe -NoProfile -ExecutionPolicy Bypass "& {& '%~dp0ps-check-for-vcpkg-update.ps1' %*}"
 exit /b 0
 
 :check_github_repo
 if "%optional_vcpkg_dir%" neq "" (
 echo Ignoring '%1' port check since it can't be run locally.
 ) else (
-powershell.exe -NoProfile -ExecutionPolicy Bypass "& {& '%~dp0check-for-github-repo-update.ps1' %*}"
+powershell.exe -NoProfile -ExecutionPolicy Bypass "& {& '%~dp0ps-check-for-github-repo-update.ps1' %*}"
 )
 exit /b 0
 
@@ -58,6 +58,6 @@ exit /b 0
 if "%optional_vcpkg_dir%" neq "" (
 echo Ignoring '%1' port check since it can't be run locally.
 ) else (
-powershell.exe -NoProfile -ExecutionPolicy Bypass "& {& '%~dp0check-for-github-tag-update.ps1' %*}"
+powershell.exe -NoProfile -ExecutionPolicy Bypass "& {& '%~dp0ps-check-for-github-tag-update.ps1' %*}"
 )
 exit /b 0
