@@ -12,7 +12,6 @@ vcpkg_from_github(
         abseil.diff
         cxxflags.diff
         linkage.diff
-        protobuf.diff
 )
 
 #my change: enable pkgconfig for Windows.
@@ -27,6 +26,7 @@ vcpkg_cmake_configure(
         -DSPM_ENABLE_TCMALLOC=OFF
         -DSPM_ABSL_PROVIDER=package
         -DSPM_PROTOBUF_PROVIDER=package
+        -DPROTOBUF_LITE_LIBRARY=protobuf::libprotobuf-lite
 )
 
 vcpkg_cmake_install()

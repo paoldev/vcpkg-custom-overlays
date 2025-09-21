@@ -1,9 +1,9 @@
 diff --git a/portfile.cmake b/portfile.cmake
-index 0490c85..b223b65 100644
+index a9a6df3..ce5cd58 100644
 --- a/portfile.cmake
 +++ b/portfile.cmake
-@@ -15,6 +15,9 @@ vcpkg_from_github(
-         protobuf.diff
+@@ -14,6 +14,9 @@ vcpkg_from_github(
+         linkage.diff
  )
  
 +#my change: enable pkgconfig for Windows.
