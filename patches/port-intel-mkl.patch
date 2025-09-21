@@ -1,9 +1,9 @@
 diff --git a/portfile.cmake b/portfile.cmake
-index d077ee0..a859ff4 100644
+index 8c3216a..d0ed3e6 100644
 --- a/portfile.cmake
 +++ b/portfile.cmake
-@@ -103,7 +103,7 @@ if(VCPKG_TARGET_IS_WINDOWS)
-     set(mkl_dir "${extract_1_dir}/Intel/Compiler/12.0/mkl/2023.0.0")
+@@ -110,7 +110,7 @@ if(VCPKG_TARGET_IS_WINDOWS)
+     set(mkl_dir "${extract_1_dir}/Intel/Compiler/12.0/mkl/${mkl_version}")
      file(COPY "${mkl_dir}/include/" DESTINATION "${CURRENT_PACKAGES_DIR}/include")
      # see https://www.intel.com/content/www/us/en/developer/tools/oneapi/onemkl-link-line-advisor.html for linking
 -    if(VCPKG_LIBRARY_LINKAGE STREQUAL "dynamic")
