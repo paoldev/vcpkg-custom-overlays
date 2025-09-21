@@ -1,88 +1,81 @@
-diff --git a/my-optional-win32-feature.patch b/my-optional-win32-feature.patch
+diff --git a/my-uwp-support.patch b/my-uwp-support.patch
 new file mode 100644
-index 0000000..059c065
+index 0000000..3419b2a
 --- /dev/null
-+++ b/my-optional-win32-feature.patch
-@@ -0,0 +1,57 @@
++++ b/my-uwp-support.patch
+@@ -0,0 +1,60 @@
 +diff --git a/meson.build b/meson.build
-+index cc13180..3fb6d38 100644
++index cc13180..4b1a2e6 100644
 +--- a/meson.build
 ++++ b/meson.build
-+@@ -484,7 +484,25 @@ if host_machine.system() == 'darwin' and not get_option('quartz').disabled()
++@@ -484,11 +484,18 @@ if host_machine.system() == 'darwin' and not get_option('quartz').disabled()
 +   endif
 + endif
 + 
-+-if host_machine.system() == 'windows'
-++# When compiling cairo dll for 'windows' or 'UWP' without 'win32' stuff,
-++# keep 'cairo-win32-system.c' code, just to be sure that Win32 mutexes are correctly initialized.
-++if host_machine.system() == 'windows' and get_option('win32').disabled()
-++  add_languages('cpp', native: false)
-++
-++  add_project_arguments('-DWIN32_LEAN_AND_MEAN', '-DNOMINMAX', language: ['c', 'cpp'])
-++  if cc.get_define('WINAPI_FAMILY') == 'WINAPI_FAMILY_APP' or cc.get_define('WINAPI_FAMILY') == 'WINAPI_FAMILY_PC_APP' or cc.get_define('WINAPI_FAMILY') == '2'
-++    add_project_arguments('-DWINVER=_WIN32_WINNT_WIN10', '-D_WIN32_WINNT=_WIN32_WINNT_WIN10', '-DNTDDI_VERSION=NTDDI_WIN10_RS3', language: ['c', 'cpp'])
-++  else
-++    add_project_arguments('-DWINVER=_WIN32_WINNT_WIN2K', '-D_WIN32_WINNT=_WIN32_WINNT_WIN2K', language: ['c', 'cpp'])
-++  endif
-++
-++  built_features += [
-++    {
-++      'name': 'cairo-win32-system-only',
-++      'description': 'Microsoft Windows library initialization',
-++    }
-++  ]
-++elif host_machine.system() == 'windows'
+++is_uwp = false  # used in src/meson.build
++ if host_machine.system() == 'windows'
 +   add_languages('cpp', native: false)
 + 
 +   add_project_arguments('-DWIN32_LEAN_AND_MEAN', '-DNOMINMAX', language: ['c', 'cpp'])
-+diff --git a/meson.options b/meson.options
-+index 8aa6814..92b7c9f 100644
-+--- a/meson.options
-++++ b/meson.options
-+@@ -7,6 +7,7 @@ option('freetype', type : 'feature', value : 'auto')
-+ option('png', type : 'feature', value : 'auto') # png and svg surfaces
-+ option('quartz', type : 'feature', value : 'auto')
-+ option('tee', type : 'feature', value : 'auto')
-++option('win32', type : 'feature', value : 'auto')
-+ option('xcb', type : 'feature', value : 'auto')
-+ option('xlib', type : 'feature', value : 'auto')
-+ option('xlib-xcb', type : 'feature', value : 'disabled')
++ 
+++  winapi_family = cc.get_define('WINAPI_FAMILY')
+++  is_uwp = ['WINAPI_FAMILY_APP', 'WINAPI_FAMILY_PC_APP', '2'].contains(winapi_family)
+++  is_win32 = not is_uwp
+++  
+++  # When compiling cairo for 'uwp', remove 'win32' stuff.
+++  if is_win32
++   win32_extra_deps = [
++     cc.find_library('gdi32'),
++     cc.find_library('msimg32'),
++@@ -511,6 +518,7 @@ if host_machine.system() == 'windows'
++       'deps': win32_extra_deps,
++     }
++   ]
+++  endif
++ 
++   cpp_compiler = meson.get_compiler('cpp')
++   d2d_dep = cpp_compiler.find_library('d2d1', required: get_option('dwrite'))
++@@ -521,7 +529,10 @@ if host_machine.system() == 'windows'
++   wincodec_dep = cpp_compiler.find_library('windowscodecs', required: get_option('dwrite'))
++   wincodec_header = cpp_compiler.has_header('wincodec.h')
++ 
++-  if d2d_dep.found() and dwrite_dep.found() and d2d_header and dwrite_header and wincodec_dep.found() and wincodec_header
+++  # TODO: dwrite should be supported in uwp mode
+++  if is_uwp
+++    add_project_arguments('-DWINVER=_WIN32_WINNT_WIN10', '-D_WIN32_WINNT=_WIN32_WINNT_WIN10', '-DNTDDI_VERSION=NTDDI_WIN10_RS3', language: ['c', 'cpp'])
+++  elif d2d_dep.found() and dwrite_dep.found() and d2d_header and dwrite_header and wincodec_dep.found() and wincodec_header
++     feature_conf.set('CAIRO_HAS_DWRITE_FONT', 1)
++     built_features += [{
++       'name': 'cairo-dwrite-font',
 +diff --git a/src/meson.build b/src/meson.build
-+index ac06ac6..15f9ca6 100644
++index ac06ac6..c20e83e 100644
 +--- a/src/meson.build
 ++++ b/src/meson.build
-+@@ -182,6 +182,9 @@ cairo_feature_sources = {
-+   'cairo-dwrite-font': [
-+     'win32/cairo-dwrite-font.cpp',
-+   ],
-++  'cairo-win32-system-only': [
-++    'win32/cairo-win32-system.c',
-++  ],
-+   'cairo-script': [
-+     'cairo-script-surface.c',
-+   ],
++@@ -232,6 +232,12 @@ foreach feature: built_features
++   cairo_headers += cairo_feature_headers.get(source_key, [])
++ endforeach
++ 
+++if is_uwp
+++  # When compiling cairo for 'uwp', 'cairo-win32-system.c' file
+++  # is still required, to correctly initialize Win32 mutexes.
+++  cairo_sources += ['win32/cairo-win32-system.c']
+++endif
+++
++ incsrc = include_directories('.')
++ 
++ cairo_static_args = []
 diff --git a/portfile.cmake b/portfile.cmake
-index 4da4f24..80419a1 100644
+index 4da4f24..d2461ef 100644
 --- a/portfile.cmake
 +++ b/portfile.cmake
-@@ -11,9 +11,17 @@ vcpkg_from_gitlab(
+@@ -11,6 +11,7 @@ vcpkg_from_gitlab(
      SHA512 663e6edf2718e8205e30ba309ac609ced9e88e6e1ec857fc48b345dfce82b044d58ec6b4a2d2b281fba30a659a368625ea7501f8b43fe26c137a7ebffdbaac91
      PATCHES
          msvc-convenience.diff
-+        my-optional-win32-feature.patch  #my-change: it MUST be applied before 'fix_clang-cl_build.patch'
++        my-uwp-support.patch  #my-change: it MUST be applied before 'fix_clang-cl_build.patch'
          ${EXTRA_PATCHES}
  )
  
-+#my-change begin
-+if(VCPKG_TARGET_IS_UWP)
-+    #disable gdi and dwrite stuff: feature added by 'my-optional-win32-feature.patch'
-+    list(APPEND OPTIONS -Dwin32=disabled)
-+endif()
-+#my-change end
-+
- if("fontconfig" IN_LIST FEATURES)
-     list(APPEND OPTIONS -Dfontconfig=enabled)
- else()
 diff --git a/vcpkg.json b/vcpkg.json
 index 91c9d3d..3ff63bf 100644
 --- a/vcpkg.json

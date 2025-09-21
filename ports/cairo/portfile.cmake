@@ -11,16 +11,9 @@ vcpkg_from_gitlab(
     SHA512 663e6edf2718e8205e30ba309ac609ced9e88e6e1ec857fc48b345dfce82b044d58ec6b4a2d2b281fba30a659a368625ea7501f8b43fe26c137a7ebffdbaac91
     PATCHES
         msvc-convenience.diff
-        my-optional-win32-feature.patch  #my-change: it MUST be applied before 'fix_clang-cl_build.patch'
+        my-uwp-support.patch  #my-change: it MUST be applied before 'fix_clang-cl_build.patch'
         ${EXTRA_PATCHES}
 )
-
-#my-change begin
-if(VCPKG_TARGET_IS_UWP)
-    #disable gdi and dwrite stuff: feature added by 'my-optional-win32-feature.patch'
-    list(APPEND OPTIONS -Dwin32=disabled)
-endif()
-#my-change end
 
 if("fontconfig" IN_LIST FEATURES)
     list(APPEND OPTIONS -Dfontconfig=enabled)
