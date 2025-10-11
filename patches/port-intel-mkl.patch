@@ -1,13 +1,39 @@
 diff --git a/portfile.cmake b/portfile.cmake
-index 8c3216a..d0ed3e6 100644
+index d4fbbe0..1a1da46 100644
 --- a/portfile.cmake
 +++ b/portfile.cmake
-@@ -110,7 +110,7 @@ if(VCPKG_TARGET_IS_WINDOWS)
-     set(mkl_dir "${extract_1_dir}/Intel/Compiler/12.0/mkl/${mkl_version}")
-     file(COPY "${mkl_dir}/include/" DESTINATION "${CURRENT_PACKAGES_DIR}/include")
-     # see https://www.intel.com/content/www/us/en/developer/tools/oneapi/onemkl-link-line-advisor.html for linking
--    if(VCPKG_LIBRARY_LINKAGE STREQUAL "dynamic")
-+    if((VCPKG_LIBRARY_LINKAGE STREQUAL "dynamic") OR (VCPKG_CRT_LINKAGE STREQUAL "dynamic")) #my-change
-       set(files "mkl_core_dll.lib" "mkl_${threading}_dll.lib" "mkl_intel_${interface}_dll.lib" "mkl_blas95_${interface}.lib" "mkl_lapack95_${interface}.lib") # "mkl_rt.lib" single dynamic lib with dynamic dispatch
-       file(COPY "${mkl_dir}/redist/intel64/" DESTINATION "${CURRENT_PACKAGES_DIR}/bin") # Could probably be reduced instead of copying all
-       if(NOT VCPKG_BUILD_TYPE)
+@@ -137,6 +137,17 @@ if(threading STREQUAL "intel_thread")
+   file(COPY "${compiler_dir}/lib/" DESTINATION "${CURRENT_PACKAGES_DIR}/lib/")
+   file(COPY_FILE "${compiler_dir}/lib/pkgconfig/openmp.pc" "${CURRENT_PACKAGES_DIR}/lib/pkgconfig/libiomp5.pc")
+   vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/lib/pkgconfig/${main_pc_file}" "openmp" "libiomp5")
++  # my-change - begin
++  # libiomp5md.lib always requires libiomp5md.dll presence.
++  # See https://www.intel.com/content/www/us/en/developer/tools/oneapi/onemkl-link-line-advisor.html for linking commandline.
++  if (VCPKG_TARGET_IS_WINDOWS)
++    file(MAKE_DIRECTORY "${CURRENT_PACKAGES_DIR}/bin")
++    file(GLOB libiomp_dlls RELATIVE "${compiler_dir}/bin" "${compiler_dir}/bin/libiomp*.dll")
++	foreach(file IN LISTS libiomp_dlls)
++      file(COPY_FILE "${compiler_dir}/bin/${file}" "${CURRENT_PACKAGES_DIR}/bin/${file}")
++    endforeach()
++  endif()
++  # my-change - end
+ endif()
+ 
+ if(VCPKG_LIBRARY_LINKAGE STREQUAL "dynamic")
+@@ -153,6 +164,16 @@ file(GLOB_RECURSE files_to_remove
+     "${CURRENT_PACKAGES_DIR}/lib/*${to_remove_suffix}"
+     "${CURRENT_PACKAGES_DIR}/lib/*${to_remove_suffix}.?"
+ )
++
++#my-change - begin
++# libiomp5md.lib always requires libiomp5md.dll presence.
++# See https://www.intel.com/content/www/us/en/developer/tools/oneapi/onemkl-link-line-advisor.html for linking commandline.
++if(VCPKG_TARGET_IS_WINDOWS AND (threading STREQUAL "intel_thread"))
++    list(FILTER files_to_remove EXCLUDE REGEX ".*libiomp.*\\.dll$")
++	#list(FILTER files_to_remove EXCLUDE REGEX ".*omptarget.*\\.dll$")
++endif()
++#my-change - end
++
+ file(REMOVE ${files_to_remove})
+ 
+ file(COPY_FILE "${CURRENT_PACKAGES_DIR}/lib/pkgconfig/${main_pc_file}" "${CURRENT_PACKAGES_DIR}/lib/pkgconfig/mkl.pc")
