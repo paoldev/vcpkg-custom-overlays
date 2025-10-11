@@ -63,7 +63,7 @@ call :build %PortToBuild%
 goto :eof
 
 :build
-%vcpkg% %Operation% --triplet %Triplet% --overlay-ports %OverlayPorts% --overlay-triplets %OverlayTriplets% --recurse %*
+%vcpkg% %Operation% --vcpkg-root "%VcpkgRoot%" --triplet %Triplet% --overlay-ports %OverlayPorts% --overlay-triplets %OverlayTriplets% --recurse %*
 exit /b 0
 
 :usage
