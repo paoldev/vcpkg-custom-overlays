@@ -77,10 +77,10 @@ index 4da4f24..d2461ef 100644
  )
  
 diff --git a/vcpkg.json b/vcpkg.json
-index 91c9d3d..3ff63bf 100644
+index 4d45978..6adc332 100644
 --- a/vcpkg.json
 +++ b/vcpkg.json
-@@ -4,7 +4,7 @@
+@@ -5,7 +5,7 @@
    "description": "Cairo is a 2D graphics library with support for multiple output devices. Currently supported output targets include the X Window System (via both Xlib and XCB), Quartz, Win32, image buffers, PostScript, PDF, and SVG file output. Experimental backends include OpenGL, BeOS, OS/2, and DirectFB.",
    "homepage": "https://cairographics.org",
    "license": "LGPL-2.1-only OR MPL-1.1",
@@ -89,7 +89,7 @@ index 91c9d3d..3ff63bf 100644
    "dependencies": [
      "dirent",
      "expat",
-@@ -18,12 +18,16 @@
+@@ -19,12 +19,16 @@
      "zlib"
    ],
    "default-features": [
