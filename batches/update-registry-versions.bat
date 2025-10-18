@@ -9,7 +9,7 @@ if not exist "%1\vcpkg.exe" goto :usage
 
 set LOCAL_ROOT=%~dp0..
 
-"%1\vcpkg.exe" --vcpkg-root="%LOCAL_ROOT%" --x-builtin-ports-root="%LOCAL_ROOT%\ports" --x-builtin-registry-versions-dir="%LOCAL_ROOT%\versions" x-add-version --all --verbose --skip-version-format-check
+"%1\vcpkg.exe" --vcpkg-root="%1" --x-builtin-ports-root="%LOCAL_ROOT%\ports" --x-builtin-registry-versions-dir="%LOCAL_ROOT%\versions" x-add-version --all --verbose --skip-version-format-check
 
 goto :eof
 
