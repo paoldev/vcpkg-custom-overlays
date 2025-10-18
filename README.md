@@ -89,7 +89,8 @@ Custom intel-mkl port.
 
 New feature:  
 - updated dynamic crt dependency, when used by static libraries compiled with MultiThreaded\<Debug\>DLL crt flags (/MD(d)).  
-  See <https://www.intel.com/content/www/us/en/docs/onemkl/developer-guide-windows/2023-0/linking-with-compiler-run-time-libraries.html>:
+  See <https://www.intel.com/content/www/us/en/developer/tools/oneapi/onemkl-link-line-advisor.html> to generate linker commandline.  
+  See <https://www.intel.com/content/www/us/en/docs/onemkl/developer-guide-windows/2025-2/linking-with-compiler-run-time-libraries.html> for /MT and /MD differences:
   > Dynamically link libiomp5 or tbb library even if you link other libraries statically.  
   ...  
   /MT for linking with static Intel® oneAPI Math Kernel Library libraries  
