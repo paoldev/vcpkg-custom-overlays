@@ -49,7 +49,7 @@
       "port-version": 0
     },
     "vcpkg-tool-clang": {
-      "baseline": "21.1.1",
+      "baseline": "21.1.4",
       "port-version": 0
     }
   }
