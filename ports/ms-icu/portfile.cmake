@@ -59,13 +59,24 @@ else()
 	set(VCPKG_POLICY_EMPTY_INCLUDE_FOLDER enabled)
 endif()
 
-#PkgConfig: for simplicity, use the same .pc file to export all libs
+#PkgConfig and vcpkg-cmake-wrapper.cmake: for simplicity, use the same .pc file to export all libs
 set(PC_ICU_LIBS "")
+set(WRAPPER_ICU_LIBS "")
+set(WRAPPER_ICU_IN_LIBS "")
+file(TO_CMAKE_PATH "${LIBSPATH}" WRAPPER_ICU_LIBS_PATH)
 foreach (lib ${ICU_LIBS})
   string(TOLOWER ${lib} lib)
   string(REPLACE ".lib" "" lib ${lib})
   set(PC_ICU_LIBS ${PC_ICU_LIBS} " -l${lib}")
+  if ("${lib}" STREQUAL "icuin")
+    set(WRAPPER_ICU_IN_LIBS ${WRAPPER_ICU_IN_LIBS} " ${lib}")
+  else()
+    set(WRAPPER_ICU_LIBS ${WRAPPER_ICU_LIBS} " ${lib}")
+  endif()
 endforeach()
+if("${WRAPPER_ICU_IN_LIBS}" STREQUAL "")
+  set(WRAPPER_ICU_IN_LIBS ${WRAPPER_ICU_LIBS})
+endif()
 string(REGEX MATCH "^([0-9]+)\\.([0-9]+)\\.([0-9]+)" WINDOWS_SDK_SEMVER "${WINDOWS_SDK}")
 configure_file("${CMAKE_CURRENT_LIST_DIR}/icu.pc.in" "${CURRENT_PACKAGES_DIR}/lib/pkgconfig/icu-i18n.pc" @ONLY)
 configure_file("${CMAKE_CURRENT_LIST_DIR}/icu.pc.in" "${CURRENT_PACKAGES_DIR}/lib/pkgconfig/icu-io.pc" @ONLY)
@@ -76,7 +87,8 @@ if(NOT VCPKG_BUILD_TYPE)
   file(COPY "${CURRENT_PACKAGES_DIR}/lib/pkgconfig/icu-uc.pc" DESTINATION "${CURRENT_PACKAGES_DIR}/debug/lib/pkgconfig")
 endif()
 vcpkg_fixup_pkgconfig()
-#PkgConfig End
+configure_file("${CMAKE_CURRENT_LIST_DIR}/vcpkg-cmake-wrapper.cmake" "${CURRENT_PACKAGES_DIR}/share/icu/vcpkg-cmake-wrapper.cmake" @ONLY)
+#PkgConfig and vcpkg-cmake-wrapper.cmake: End
 
 #copyright
 file(WRITE "${CURRENT_PACKAGES_DIR}/share/${PORT}/copyright" "See https://developer.microsoft.com/windows/downloads/windows-10-sdk for the Windows 10 SDK license")
