@@ -127,6 +127,55 @@ Function Get-VcpkgJsonInfo
     }
 }
 
+# Get the latest release tag and assets list (name, download_url, size and digest)
+Function Get-GithubLatestReleaseInfo
+{
+    [CmdletBinding()]
+    [OutputType([Hashtable])]
+    Param (
+        [Parameter(Mandatory=$True)]
+        [string]$remoteLatestReleaseUrl
+    )
+    Begin {
+        $Version = [string]@{}
+		$Assets = @()
+    }
+    Process {
+
+        $remoteLatestRelease = Get-FileContent $remoteLatestReleaseUrl -ToJsonObject
+        if ([bool]($remoteLatestRelease.PSobject.Properties.name -match "^tag_name$"))
+        {
+            $Version = $remoteLatestRelease.tag_name
+			
+			if ([bool]($remoteLatestRelease.PSobject.Properties.name -match "^assets$"))
+			{
+				foreach ($asset in $remoteLatestRelease.assets)
+				{
+					#Write-Host "$($asset.name) $($asset.browser_download_url) $($asset.size) $($asset.digest)"
+					
+					$Assets += @{
+						name=$asset.name
+						download_url=$asset.browser_download_url
+						size=$asset.size
+						digest=$asset.digest
+					}
+				}
+			}
+        }
+        else
+        {
+            throw "Missing 'tag_name' field in repo tag list."
+        }
+    }
+    End {
+
+        @{
+			version=$Version
+			assets=$Assets
+		}
+    }
+}
+
 Function Get-GithubLatestReleaseVersion
 {
     [CmdletBinding()]
@@ -136,23 +185,13 @@ Function Get-GithubLatestReleaseVersion
         [string]$remoteLatestReleaseUrl
     )
     Begin {
-        $Version = [string]@{}
+        $ReleaseInfo = @{}
     }
     Process {
-
-        $remoteLatestRelease = Get-FileContent $remoteLatestReleaseUrl -ToJsonObject
-        if ([bool]($remoteLatestRelease.PSobject.Properties.name -match "^tag_name$"))
-        {
-            $Version = $remoteLatestRelease.tag_name
-        }
-        else
-        {
-            throw "Missing 'tag_name' field in repo tag list."
-        }
+        $ReleaseInfo = Get-GithubLatestReleaseInfo $remoteLatestReleaseUrl
     }
     End {
-
-        $Version
+        $ReleaseInfo.version
     }
 }
 
