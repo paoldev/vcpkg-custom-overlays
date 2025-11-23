@@ -17,8 +17,8 @@
       "port-version": 0
     },
     "icu": {
-      "baseline": "74.2",
-      "port-version": 6
+      "baseline": "78.1",
+      "port-version": 0
     },
     "intel-mkl": {
       "baseline": "2025.2.0",
