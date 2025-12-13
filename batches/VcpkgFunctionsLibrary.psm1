@@ -61,6 +61,7 @@ Function Get-VcpkgJsonInfo
     Begin {
         $Name = [string]@{}
         $Version = [string]@{}
+        $VersionType = [string]@{}
         $PortVersion = [string]@{}
         $Homepage = [string]@{}
     }
@@ -80,18 +81,22 @@ Function Get-VcpkgJsonInfo
         if ([bool]($JsonObject.PSobject.Properties.name -match "^version$"))
         {
             $Version = $JsonObject.version
+            $VersionType = "version"
         }
         elseif ([bool]($JsonObject.PSobject.Properties.name -match "^version-date$"))
         {
             $Version = $JsonObject.'version-date'
+            $VersionType = "version-date"
         }
         elseif ([bool]($JsonObject.PSobject.Properties.name -match "^version-string$"))
         {
             $Version = $JsonObject.'version-string'
+            $VersionType = "version-string"
         }
         elseif ([bool]($JsonObject.PSobject.Properties.name -match "^version-semver$"))
         {
             $Version = $JsonObject.'version-semver'
+            $VersionType = "version-semver"
         }
         else
         {
@@ -121,6 +126,7 @@ Function Get-VcpkgJsonInfo
         @{
             name=$Name
             version=$Version
+            versiontype=$VersionType
             portversion=$PortVersion
             homepage=$Homepage
         }
@@ -281,6 +287,7 @@ Function Get-GithubPortFileInfo
     Begin {
         $repo = [string]@{}
         $ref = [string]@{}
+		$raw_ref = [string]@{}
         $branch = [string]@{}
     }
     Process {
@@ -301,16 +308,17 @@ Function Get-GithubPortFileInfo
         
         # Can't use named groups, but current captures are always at index 1.
         $repo = $matches_repo.Matches.Groups[1].Value
-        $ref = $matches_ref.Matches.Groups[1].Value
+        $raw_ref = $matches_ref.Matches.Groups[1].Value
         $branch = $matches_branch.Matches.Groups[1].Value
 
         # Fix port refs containing ${version} field.
-        $ref = $ref -replace "(?i)\$\{version\}", $expectedPortVersion
+        $ref = $raw_ref -replace "(?i)\$\{version\}", $expectedPortVersion
     }
     End {
         @{
             repo=$repo
             ref=$ref
+			raw_ref=$raw_ref
             branch=$branch
         }
     }
