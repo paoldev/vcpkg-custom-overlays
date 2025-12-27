@@ -29,7 +29,7 @@
       "port-version": 1
     },
     "lua": {
-      "baseline": "5.4.8",
+      "baseline": "5.5.0",
       "port-version": 0
     },
     "ms-icu": {
