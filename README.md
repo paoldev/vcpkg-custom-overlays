@@ -2,6 +2,8 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-red.svg)](LICENSE)
 
+vcpkg-custom-overlays (C) 2023 - 2026 paoldev.  
+
 This repository contains some custom ports I used / use for few projects of mine.
 
 ## How to install and use
