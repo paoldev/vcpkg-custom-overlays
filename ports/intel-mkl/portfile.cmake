@@ -40,7 +40,7 @@ vcpkg_download_distfile(installer_path
 )
 
 #my-change - begin
-# libiomp5md.lib always requires libiomp5md.dll presence.
+# libiomp5md.lib always requires libiomp5md.dll presence, when crt-linkage is dynamic, regardless of vcpkg-library-linkage mode.
 # See https://www.intel.com/content/www/us/en/developer/tools/oneapi/onemkl-link-line-advisor.html for linking commandline.
 # See https://www.intel.com/content/www/us/en/docs/onemkl/developer-guide-windows/2025-2/linking-with-compiler-run-time-libraries.html for /MT and /MD differences.
 #	/MT for linking with static Intel® oneAPI Math Kernel Library (oneMKL) libraries
@@ -141,30 +141,9 @@ vcpkg_execute_required_process(
 set(mkl_dir "${extract_1_dir}/_installdir/mkl/${mkl_short_version}")
 file(COPY "${mkl_dir}/include/" DESTINATION "${CURRENT_PACKAGES_DIR}/include")
 file(COPY "${mkl_dir}/${package_libdir}/" DESTINATION "${CURRENT_PACKAGES_DIR}/lib/")
-#my-change - begin
-# libiomp5md.lib always requires libiomp5md.dll presence.
-# See https://www.intel.com/content/www/us/en/developer/tools/oneapi/onemkl-link-line-advisor.html for linking commandline.
-# See https://www.intel.com/content/www/us/en/docs/onemkl/developer-guide-windows/2025-2/linking-with-compiler-run-time-libraries.html for /MT and /MD differences.
-#	/MT for linking with static Intel® oneAPI Math Kernel Library (oneMKL) libraries
-#	/MD for linking with dynamic Intel® oneAPI Math Kernel Library (oneMKL) libraries
-if(VCPKG_TARGET_IS_WINDOWS AND (${MKL_LIBRARY_LINKAGE} STREQUAL "dynamic"))
-  file(MAKE_DIRECTORY "${CURRENT_PACKAGES_DIR}/bin")
-  file(GLOB mkl_dlls RELATIVE "${mkl_dir}/${runtime_dir}" "${mkl_dir}/${runtime_dir}/*.dll")
-  list(FILTER mkl_dlls EXCLUDE REGEX ".*_lp64.*")
-  list(FILTER mkl_dlls EXCLUDE REGEX ".*_cdft.*")
-  list(FILTER mkl_dlls EXCLUDE REGEX ".*_rt.*")
-  list(FILTER mkl_dlls EXCLUDE REGEX ".*_seq.*")
-  list(FILTER mkl_dlls EXCLUDE REGEX ".*_sycl.*")
-  list(FILTER mkl_dlls EXCLUDE REGEX ".*_tbb.*")
-  list(FILTER mkl_dlls EXCLUDE REGEX ".*mpi_.*")
-  # also filter all remaining "cluster" libraries?
-  list(FILTER mkl_dlls EXCLUDE REGEX ".*_blacs.*")
-  list(FILTER mkl_dlls EXCLUDE REGEX ".*_scalapack.*")
-  foreach(file IN LISTS mkl_dlls)
-    file(COPY_FILE "${mkl_dir}/${runtime_dir}/${file}" "${CURRENT_PACKAGES_DIR}/bin/${file}")
-  endforeach()
+if(${MKL_LIBRARY_LINKAGE} STREQUAL "dynamic")	#my-change
+  file(COPY "${mkl_dir}/${runtime_dir}/" DESTINATION "${CURRENT_PACKAGES_DIR}/bin/")
 endif()
-#my-change - end
 
 file(COPY_FILE "${mkl_dir}/lib/pkgconfig/${main_pc_file}" "${CURRENT_PACKAGES_DIR}/lib/pkgconfig/${main_pc_file}")
 vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/lib/pkgconfig/${main_pc_file}" "\${exec_prefix}/${package_libdir}" "\${exec_prefix}/lib/" IGNORE_UNCHANGED)
@@ -172,20 +151,11 @@ vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/lib/pkgconfig/${main_pc_file}" "\$
 set(compiler_dir "${extract_1_dir}/_installdir/compiler/${mkl_short_version}")
 if(threading STREQUAL "intel_thread")
   file(COPY "${compiler_dir}/lib/" DESTINATION "${CURRENT_PACKAGES_DIR}/lib/")
+  if(${MKL_LIBRARY_LINKAGE} STREQUAL "dynamic")	#my-change
+    file(COPY "${compiler_dir}/bin/" DESTINATION "${CURRENT_PACKAGES_DIR}/bin/")
+  endif()
   file(COPY_FILE "${compiler_dir}/lib/pkgconfig/openmp.pc" "${CURRENT_PACKAGES_DIR}/lib/pkgconfig/libiomp5.pc")
   vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/lib/pkgconfig/${main_pc_file}" "openmp" "libiomp5")
-  # my-change - begin
-  # libiomp5md.lib always requires libiomp5md.dll presence.
-  # See https://www.intel.com/content/www/us/en/developer/tools/oneapi/onemkl-link-line-advisor.html for linking commandline.
-  # See https://www.intel.com/content/www/us/en/docs/onemkl/developer-guide-windows/2025-2/linking-with-compiler-run-time-libraries.html for /MT and /MD differences.
-  if (VCPKG_TARGET_IS_WINDOWS)
-    file(MAKE_DIRECTORY "${CURRENT_PACKAGES_DIR}/bin")
-    file(GLOB libiomp_dlls RELATIVE "${compiler_dir}/bin" "${compiler_dir}/bin/libiomp*.dll")
-	foreach(file IN LISTS libiomp_dlls)
-      file(COPY_FILE "${compiler_dir}/bin/${file}" "${CURRENT_PACKAGES_DIR}/bin/${file}")
-    endforeach()
-  endif()
-  # my-change - end
 endif()
 
 if(${MKL_LIBRARY_LINKAGE} STREQUAL "dynamic")	#my-change
@@ -221,10 +191,8 @@ file(COPY "${mkl_dir}/lib/cmake/" DESTINATION "${CURRENT_PACKAGES_DIR}/share/")
 vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/share/mkl/MKLConfig.cmake" "MKL_CMAKE_PATH}/../../../" "MKL_CMAKE_PATH}/../../")
 vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/share/mkl/MKLConfig.cmake" "redist/\${MKL_ARCH}" "bin")
 if(${MKL_LIBRARY_LINKAGE} STREQUAL "static")	#my-change
-vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/share/mkl/MKLConfig.cmake" "define_param(MKL_LINK DEFAULT_MKL_LINK MKL_LINK_LIST)" 
-[[define_param(MKL_LINK DEFAULT_MKL_LINK MKL_LINK_LIST)
- set(MKL_LINK "static")
-]])
+  vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/share/mkl/MKLConfig.cmake" "set(DEFAULT_MKL_LINK dynamic)" "set(DEFAULT_MKL_LINK static)")
+  vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/share/mkl/MKLConfig.cmake" "set(LIB_EXT \".so\")" "set(LIB_EXT \".a\")")
 endif()
 #TODO: Hardcode settings from portfile in config.cmake
 #TODO: Give lapack/blas information about the correct BLA_VENDOR depending on settings. 
@@ -236,6 +204,9 @@ vcpkg_install_copyright(FILE_LIST "${package_path}/licenses/license.htm")
 file(REMOVE_RECURSE
     "${extract_0_dir}"
     "${extract_1_dir}"
+    "${CURRENT_PACKAGES_DIR}/bin/compiler"
+    "${CURRENT_PACKAGES_DIR}/lib/clang"	#my-change
+    "${CURRENT_PACKAGES_DIR}/lib/cmake"
 )
 
 file(INSTALL "${CMAKE_CURRENT_LIST_DIR}/usage" DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}")

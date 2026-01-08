@@ -22,7 +22,7 @@
     },
     "intel-mkl": {
       "baseline": "2025.2.0",
-      "port-version": 0
+      "port-version": 1
     },
     "libpsl": {
       "baseline": "0.21.5",
