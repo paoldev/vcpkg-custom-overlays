@@ -2,15 +2,6 @@ diff --git a/CMakeLists.txt b/CMakeLists.txt
 index 2ecf285..209ff48 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -10,7 +10,7 @@ project(OpenNMTTokenizer)
- option(BUILD_TESTS "Compile unit tests" OFF)
- option(BUILD_SHARED_LIBS "Build shared libraries" ON)
- 
--set(CMAKE_CXX_STANDARD 11)
-+set(CMAKE_CXX_STANDARD 17)
- if(CMAKE_VERSION VERSION_LESS "3.7.0")
-   set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
- endif()
 @@ -19,31 +19,19 @@ if(NOT CMAKE_BUILD_TYPE)
    set(CMAKE_BUILD_TYPE Release)
  endif(NOT CMAKE_BUILD_TYPE)
@@ -70,16 +61,3 @@ index 2ecf285..209ff48 100644
    )
  
  if(COMMAND create_library)
-diff --git a/src/SentencePiece.cc b/src/SentencePiece.cc
-index 5c7cf5f..e92bc6d 100644
---- a/src/SentencePiece.cc
-+++ b/src/SentencePiece.cc
-@@ -54,7 +54,7 @@ namespace onmt
-     if (options && (options->joiner_annotate || options->spacer_new))
-       throw std::invalid_argument("SentencePiece vocabulary restriction requires the tokenization "
-                                   "to use \"spacer_annotate\" (same as spm_encode)");
--    auto status = _processor->SetVocabulary(vocabulary);
-+    auto status = _processor->SetVocabulary(std::vector<absl::string_view>(vocabulary.begin(), vocabulary.end()));
-     if (!status.ok())
-       throw std::invalid_argument(status.ToString());
-   }
