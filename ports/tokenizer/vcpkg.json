@@ -1,6 +1,6 @@
 {
   "name": "tokenizer",
-  "version": "1.38.0",
+  "version": "1.38.1",
   "description": "Fast, generic, and customizable text tokenization library for C++ and Python",
   "homepage": "https://github.com/OpenNMT/Tokenizer",
   "license": "MIT",
