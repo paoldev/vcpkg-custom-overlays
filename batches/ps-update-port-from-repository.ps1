@@ -74,9 +74,16 @@ else
 				
 		Write-Host "Downloading $($downloadUrl)"
 				
-		#Invoke-WebRequest -Uri $downloadUrl -OutFile $outputPath
-		#(New-Object Net.WebClient).DownloadFile($downloadUrl, $outputPath)
-		Start-BitsTransfer -Dynamic -Source $downloadUrl -Destination $outputPath
+		Try
+		{
+			Start-BitsTransfer -Dynamic -Source $downloadUrl -Destination $outputPath
+		}
+		Catch
+		{
+			# Fallback, since Start-BitsTransfer seems to not work with "subst" drives.
+			Invoke-WebRequest -Uri $downloadUrl -OutFile $outputPath
+			#(New-Object Net.WebClient).DownloadFile($downloadUrl, $outputPath)
+		}
 
 		$hash512 = Get-FileHash -Path $outputPath -Algorithm SHA512
 
