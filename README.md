@@ -121,14 +121,15 @@ Port to expose Windows SDK ICU to other vcpkg ports.
 See <https://learn.microsoft.com/en-us/windows/win32/intl/international-components-for-unicode--icu-> for details about differences with "standard" icu library (<https://github.com/unicode-org/icu>).
 
 Features:
-- **default (without arguments)**: it looks for "icu.h" and "icu.lib" files in current Windows SDK; if such files are not available, it looks for legacy "icucommon.h", "icui18n.h", "icuuc.lib" and "icuin.lib": if these files are missing too, an error is triggered.
-- **forcelegacy**: it only looks for legacy headers and libs files.
+- **default (without arguments)**: it looks for "icu.h" and "icu.lib" files in current Windows SDK (its version has to be greater than or equal to 10.0.18362.0); if these files are missing, an error is triggered.
 - **dummyheaders**: it generates dummy files in "include/unicode" folder as if the "standard" icu library were built.  
 It's useful to try to compile "standard" icu dependent packages without applying any modification.  
 However, U_ICU_VERSION macro and c++ code are not exposed by "ms-icu" (as described at the link above), so compile-time errors may still happen.  
 To use this port as a replacement of the "standard" icu port, the custom icu port above has to be used, by declaring its "ms-icu" feature.  
 Usage example:  
     > vcpkg install --overlay-ports path/to/vcpkg-custom-overlays/ports --triplet x64-windows my_icu_dependent_package icu\[ms-icu\]
+
+**Note**: the **ms-icu\[forcelegacy\]** feature (that looked for "icucommon.h", "icui18n.h", "icuuc.lib" and "icuin.lib" files) is not available anymore since port version 0.0#1. Now, the minimum required Windows SDK version and WindowsTargetPlatformMinVersion are 10.0.18362.0.
 
 To use **icu\[ms-icu\]** outside of the vcpkg toolchain, probably a customized **FindICU.cmake** file has to be added to the project; for example  
 ```
@@ -159,14 +160,8 @@ foreach(_ICU_component ${ICU_FIND_COMPONENTS})
     add_library(${_ICU_imported_target} UNKNOWN IMPORTED)
     set_target_properties(${_ICU_imported_target} PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${PC_ICU_INCLUDE_DIRS}")
     foreach (lib ${PC_ICU_LINK_LIBRARIES})
-      #${PC_ICU_LINK_LIBRARIES} contains 2 libs at most (icuin and icuuc), in legacy mode.
-      if ("${_ICU_component}" MATCHES "in" AND "${lib}" MATCHES "icuin.Lib$")
-        set_target_properties(${_ICU_imported_target} PROPERTIES IMPORTED_LINK_INTERFACE_LANGUAGES "CXX" IMPORTED_LOCATION "${lib}")
-        set(${${_ICU_component_cache}} ${lib})
-      else()
-        set_target_properties(${_ICU_imported_target} PROPERTIES IMPORTED_LINK_INTERFACE_LANGUAGES "CXX" IMPORTED_LOCATION "${lib}")
-        set(${${_ICU_component_cache}} ${lib})
-      endif()
+      set_target_properties(${_ICU_imported_target} PROPERTIES IMPORTED_LINK_INTERFACE_LANGUAGES "CXX" IMPORTED_LOCATION "${lib}")
+      set(${${_ICU_component_cache}} ${lib})
     endforeach()
   endif()
 endforeach()

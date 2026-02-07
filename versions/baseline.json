@@ -34,7 +34,7 @@
     },
     "ms-icu": {
       "baseline": "0.0",
-      "port-version": 0
+      "port-version": 1
     },
     "ruy": {
       "baseline": "2025-12-18",
