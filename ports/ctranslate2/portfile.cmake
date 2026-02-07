@@ -3,7 +3,7 @@ vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO OpenNMT/CTranslate2
     REF v${VERSION}
-    SHA512 3d852c5d6d36d8574bf2037db6c1321c0f35f38fab5ba25ad3ff9a5a6a08b6f75fecefc74a3db2399e3e4105a0a62eaafd28029937dc2c1d09f717cf1980d66f
+    SHA512 0efaf566f01baba35b0970e8c94fb05b992eb8c277f476703173e6e5ea269638038d8701dcd8ccbbaac1ae004f7828e3d7b4311d6debd7559861fd11ff7abc55
     HEAD_REF master
 	PATCHES
 		fix-dependencies.patch
@@ -94,4 +94,4 @@ file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/share"
                     "${CURRENT_PACKAGES_DIR}/debug/include"
 )
 
-configure_file("${SOURCE_PATH}/LICENSE" "${CURRENT_PACKAGES_DIR}/share/${PORT}/copyright" COPYONLY)
+vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE")
