@@ -1,0 +1,60 @@
+diff --git a/vcpkg.json b/vcpkg.json
+index 9692329..b89678c 100644
+--- a/vcpkg.json
++++ b/vcpkg.json
+@@ -5,5 +5,8 @@
+   "description": "A parallel computing platform and programming model",
+   "homepage": "https://developer.nvidia.com/cuda-toolkit",
+   "license": null,
+-  "supports": "(windows & x64 & !uwp & !xbox) | (linux & x64) | (linux & arm64)"
++  "supports": "(windows & x64 & !uwp & !xbox) | (linux & x64) | (linux & arm64)",
++  "dependencies": [
++    "cuda-ci"
++  ]
+ }
+diff --git a/vcpkg_find_cuda.cmake b/vcpkg_find_cuda.cmake
+index e321a06..e1e597f 100644
+--- a/vcpkg_find_cuda.cmake
++++ b/vcpkg_find_cuda.cmake
+@@ -7,11 +7,40 @@ function(vcpkg_find_cuda)
+ 
+     set(CUDA_REQUIRED_VERSION "10.1.0")
+ 
++    #my-change - begin
++    if(VCPKG_TARGET_IS_WINDOWS AND (VCPKG_TARGET_ARCHITECTURE STREQUAL "x64"))
++        set(CUDA_OS windows)
++        set(CUDA_ARCH x86_64)
++    elseif(VCPKG_TARGET_IS_LINUX)
++        set(CUDA_OS linux)
++        if(VCPKG_TARGET_ARCHITECTURE STREQUAL "x64")
++            set(CUDA_ARCH x86_64)
++        elseif(VCPKG_TARGET_ARCHITECTURE STREQUAL "arm64")
++            set(CUDA_ARCH sbsa)
++        endif()
++    endif()
++    # Find cuda custom directory with highest version.
++    # Keep this path in sync with the one declared in 'ports/cuda-ci/portfile.cmake'.
++    file(GLOB custom_paths "${DOWNLOADS}/tools/cuda/*/${CUDA_OS}-${CUDA_ARCH}")
++    set(CUDA_CI_CUSTOM_DIR )
++    set(CUDA_MIN_VERSION CUDA_REQUIRED_VERSION)
++    foreach (cuda_path ${custom_paths})
++        string(REGEX MATCH "${DOWNLOADS}/tools/cuda/([0-9]+\\.[0-9]+\\.[0-9]+)/${CUDA_OS}-${CUDA_ARCH}" cuda_version ${cuda_path})
++        if (IS_DIRECTORY ${cuda_path} AND CMAKE_MATCH_1)
++            if (${CMAKE_MATCH_1} VERSION_GREATER_EQUAL CUDA_MIN_VERSION)
++                set(CUDA_CI_CUSTOM_DIR ${cuda_path})
++                set(CUDA_MIN_VERSION ${CMAKE_MATCH_1})
++            endif()
++        endif()
++    endforeach()
++    #my-change - end
++
+     set(CUDA_PATHS
+             ENV CUDA_PATH
+             ENV CUDA_HOME
+             ENV CUDA_BIN_PATH
+-            ENV CUDA_TOOLKIT_ROOT_DIR)
++            ENV CUDA_TOOLKIT_ROOT_DIR
++            ${CUDA_CI_CUSTOM_DIR})    #my-change
+ 
+     if (VCPKG_TARGET_IS_WINDOWS)
+         find_program(NVCC

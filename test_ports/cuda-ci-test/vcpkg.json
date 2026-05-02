@@ -1,0 +1,11 @@
+{
+  "name": "cuda-ci-test",
+  "version": "1.0",
+  "description": "CUDA ci test",
+  "license": "MIT",
+  "supports": "(windows & x64 & !uwp & !xbox) | (linux & x64) | (linux & arm64)",
+  "dependencies": [
+    "cuda",
+    "cudnn"
+  ]
+}

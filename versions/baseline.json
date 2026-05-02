@@ -16,6 +16,14 @@
       "baseline": "4.7.1",
       "port-version": 0
     },
+    "cuda": {
+      "baseline": "10.1",
+      "port-version": 13
+    },
+    "cuda-ci": {
+      "baseline": "13.2.0-9.20.0",
+      "port-version": 0
+    },
     "icu": {
       "baseline": "78.2",
       "port-version": 0

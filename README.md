@@ -29,6 +29,8 @@ vcpkg-configuration.json:
 > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"cairo",  
 > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"cpprestsdk",  
 > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"ctranslate2",  
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"cuda",  
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"cuda-ci",  
 > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"icu",  
 > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"intel-mkl",  
 > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"libpsl",  
@@ -77,6 +79,12 @@ New port for the "CTranslate2" library from https://github.com/OpenNMT/CTranslat
 This library is released under the "MIT" license: https://github.com/OpenNMT/CTranslate2/blob/master/LICENSE.  
 
 For details, see the links above.
+
+### cuda-ci (and cuda)
+
+New port to install CUDA and CUDNN for CI systems.  
+  
+'cuda' port now depends on 'cuda-ci'.
 
 ### icu
 

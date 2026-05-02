@@ -1,0 +1,22 @@
+diff --git a/parse_redist.py b/parse_redist.py
+index eddecb3..155f572 100644
+--- a/parse_redist.py
++++ b/parse_redist.py
+@@ -191,7 +191,7 @@ def fetch_action(
+         if not "name" in manifest[component]:
+             continue
+ 
+-        if component_filter is not None and component != component_filter:
++        if component_filter is not None and component_filter and component not in component_filter:
+             continue
+ 
+         print("\n" + manifest[component]["name"] + ": " + manifest[component]["version"])
+@@ -388,7 +388,7 @@ def main():
+     # Setup
+     #
+ 
+-    component = args.component
++    component = [s for s in args.component.split(",") if s.strip() != ""] if args.component else None
+ 
+     # Deduce the platform from both --os and --arch if passed
+     # note: os_ to not shadow the os module

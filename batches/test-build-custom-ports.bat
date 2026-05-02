@@ -18,6 +18,7 @@ if /i "%4" equ "-uninstall" (
 set Operation=remove
 )
 set OverlayPorts="%~dp0..\ports"
+set OverlayTestPorts="%~dp0..\test_ports"
 set OverlayTriplets="%~dp0..\triplets"
 
 set vcpkg="%1\vcpkg.exe"
@@ -25,11 +26,11 @@ set vcpkg="%1\vcpkg.exe"
 rem "ms-icu" and "cpprestsdk[windows-asio]" should be tested as standalone ports; "sentencepiece" is only static (and so its dependencies).
 rem "cpprestsdk", "ctranslate2", "onednn", "ruy" are not available in uwp; "cairo[core,freetype]" is the only feature supported in uwp.
 rem "-uninstall" doesn't support feature list in squared brackets.
-set dyn_libs=000000-my-tools cairo cpprestsdk ctranslate2 icu intel-mkl libpsl lua onednn ruy
-set stat_libs=000000-my-tools cairo cpprestsdk ctranslate2 icu intel-mkl libpsl lua onednn ruy sentencepiece tokenizer
+set dyn_libs=000000-my-tools cairo cpprestsdk ctranslate2 cuda-ci-test icu intel-mkl libpsl lua onednn ruy
+set stat_libs=000000-my-tools cairo cpprestsdk ctranslate2 cuda-ci-test icu intel-mkl libpsl lua onednn ruy sentencepiece tokenizer
 set uwp_dyn_libs=000000-my-tools cairo[core,freetype] icu intel-mkl libpsl lua 
 set uwp_stat_libs=000000-my-tools cairo[core,freetype] icu intel-mkl libpsl lua sentencepiece tokenizer
-set uninstall_all=000000-my-tools cairo cpprestsdk ctranslate2 icu intel-mkl libpsl lua ms-icu onednn ruy sentencepiece tokenizer
+set uninstall_all=000000-my-tools cairo cpprestsdk ctranslate2 cuda-ci icu intel-mkl libpsl lua ms-icu onednn ruy sentencepiece tokenizer
 
 if /i "%triplet:-static=%" equ "%triplet%" (
 if /i "%triplet:-uwp=%" equ "%triplet%" (
@@ -63,7 +64,7 @@ call :build %PortToBuild%
 goto :eof
 
 :build
-%vcpkg% %Operation% --vcpkg-root "%VcpkgRoot%" --triplet %Triplet% --overlay-ports %OverlayPorts% --overlay-triplets %OverlayTriplets% --recurse %*
+%vcpkg% %Operation% --vcpkg-root "%VcpkgRoot%" --triplet %Triplet% --overlay-ports %OverlayPorts% --overlay-ports %OverlayTestPorts% --overlay-triplets %OverlayTriplets% --recurse %*
 exit /b 0
 
 :usage
