@@ -1,5 +1,5 @@
 diff --git a/portfile.cmake b/portfile.cmake
-index 765ac71..98c50c9 100644
+index 5e5f53d..1c879aa 100644
 --- a/portfile.cmake
 +++ b/portfile.cmake
 @@ -1,3 +1,11 @@
@@ -21,7 +21,7 @@ index 765ac71..98c50c9 100644
 +#my-change begin: fix 'File name too long' error during install-icu phase, while executing 'ln -s' command.
 +if(CMAKE_HOST_WIN32)
 +    #Both winsymlinks and winsymlinks:nativestrict work fine, but winsymlinks:nativestrict may require Windows Developer Mode or administrative privileges.
-+	set(ENV{MSYS} "winsymlinks")
++    set(ENV{MSYS} "winsymlinks")
 +endif()
 +#my-change end
 +
@@ -29,10 +29,10 @@ index 765ac71..98c50c9 100644
  set(ENV{PYTHON} "${PYTHON3}")
  
 diff --git a/vcpkg.json b/vcpkg.json
-index f5ba52d..0b9e8c3 100644
+index 2d7d633..0031965 100644
 --- a/vcpkg.json
 +++ b/vcpkg.json
-@@ -23,6 +23,18 @@
+@@ -22,6 +22,18 @@
      }
    ],
    "features": {
