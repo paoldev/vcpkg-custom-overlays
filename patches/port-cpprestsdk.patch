@@ -37,14 +37,14 @@ index 0000000..283792a
 +-#endif //  !defined(CPPREST_EXCLUDE_WEBSOCKETS) || !defined(_WIN32)
 ++#endif //  !defined(_WIN32) || !defined(CPPREST_EXCLUDE_WEBSOCKETS) || defined(CPPREST_FORCE_HTTP_CLIENT_ASIO) || defined(CPPREST_FORCE_HTTP_LISTENER_ASIO)
 diff --git a/portfile.cmake b/portfile.cmake
-index 9e8e1aa..f964b0a 100644
+index efa1c7f..71c3ba6 100644
 --- a/portfile.cmake
 +++ b/portfile.cmake
 @@ -11,6 +11,7 @@ vcpkg_from_github(
          fix-clang-dllimport.patch # workaround for https://github.com/microsoft/cpprestsdk/issues/1710
-         silence-stdext-checked-array-iterators-warning.patch
          fix-asio-error.patch
-+		my-windows-asio-unresolved-external-fix.patch #my-change: see https://github.com/microsoft/cpprestsdk/pull/1466
+         remove-stdext-checked-array-iterator-1836.patch # https://github.com/microsoft/cpprestsdk/pull/1836
++        my-windows-asio-unresolved-external-fix.patch #my-change: https://github.com/microsoft/cpprestsdk/pull/1466
  )
  
  vcpkg_check_features(
@@ -64,7 +64,7 @@ index 9e8e1aa..f964b0a 100644
      set(configure_opts WINDOWS_USE_MSBUILD)
  endif()
 diff --git a/vcpkg.json b/vcpkg.json
-index 8d26279..a60da72 100644
+index 0f76b04..c4f43da 100644
 --- a/vcpkg.json
 +++ b/vcpkg.json
 @@ -80,6 +80,19 @@
