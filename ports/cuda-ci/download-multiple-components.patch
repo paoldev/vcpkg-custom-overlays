@@ -1,8 +1,21 @@
 diff --git a/parse_redist.py b/parse_redist.py
-index eddecb3..155f572 100644
+index eddecb3..a40857b 100644
 --- a/parse_redist.py
 +++ b/parse_redist.py
-@@ -191,7 +191,7 @@ def fetch_action(
+@@ -141,7 +141,11 @@ def parse_artifact(
+         and not os.path.exists(pwd + filename)
+     ):
+         # Download archive
+-        fetch_file(full_path, filename)
++        import urllib
++        if urllib.parse.urlparse(full_path).scheme in ('http', 'https', 'ftp'):
++            fetch_file(full_path, filename)
++        else:
++            fetch_file(f"{DOMAIN}/compute/{manifest["release_product"]}/redist/" + full_path[len(parent):], filename)
+         file_path = filename
+         ARCHIVES[platform].append(filename)
+     elif os.path.exists(filename):
+@@ -191,7 +195,7 @@ def fetch_action(
          if not "name" in manifest[component]:
              continue
  
@@ -11,7 +24,7 @@ index eddecb3..155f572 100644
              continue
  
          print("\n" + manifest[component]["name"] + ": " + manifest[component]["version"])
-@@ -388,7 +388,7 @@ def main():
+@@ -388,7 +392,7 @@ def main():
      # Setup
      #
  
