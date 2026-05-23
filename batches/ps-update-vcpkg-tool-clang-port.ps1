@@ -44,13 +44,22 @@ else
 			if ($asset.name -eq $expectedAssetName)
 			{
 				$found = $true
+
+				$downloadUrl = $asset.download_url
 				$outputPath = Join-Path -Path $PSScriptRoot -ChildPath $expectedAssetName
 				
-				Write-Host "Downloading $($asset.download_url)"
-				
-				#Invoke-WebRequest -Uri $asset.download_url -OutFile $outputPath
-				#(New-Object Net.WebClient).DownloadFile($asset.download_url, $outputPath)
-				Start-BitsTransfer -Source $asset.download_url -Destination $outputPath
+				Write-Host "Downloading $($downloadUrl)"
+
+				Try
+				{
+					Start-BitsTransfer -Dynamic -Source $downloadUrl -Destination $outputPath
+				}
+				Catch
+				{
+					# Fallback, since Start-BitsTransfer seems to not work with "subst" drives.
+					Invoke-WebRequest -Uri $downloadUrl -OutFile $outputPath
+					#(New-Object Net.WebClient).DownloadFile($downloadUrl, $outputPath)
+				}
 
 				$hash256 = Get-FileHash -Path $outputPath -Algorithm SHA256
 				$hash512 = Get-FileHash -Path $outputPath -Algorithm SHA512
