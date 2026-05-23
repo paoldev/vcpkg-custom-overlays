@@ -5,6 +5,11 @@ rem	 If "optional_vcpkg_dir" is not specified, the check is done against the vcp
 
 setlocal
 
+set PWSHELL=powershell.exe
+where pwsh.exe >nul 2>&1
+if %errorlevel% equ 0 (set PWSHELL=pwsh.exe)
+echo Using %PWSHELL%
+
 pushd %~dp0
 
 set optional_vcpkg_dir=%1
@@ -44,14 +49,14 @@ popd
 goto :eof
 
 :check_vcpkg
-powershell.exe -NoProfile -ExecutionPolicy Bypass "& {& '%~dp0ps-check-for-vcpkg-update.ps1' %*}"
+%PWSHELL% -NoProfile -ExecutionPolicy Bypass -Command "& {& '%~dp0ps-check-for-vcpkg-update.ps1' %*}"
 exit /b 0
 
 :check_github_repo
 if "%optional_vcpkg_dir%" neq "" (
 echo Ignoring '%1' port check since it can't be run locally.
 ) else (
-powershell.exe -NoProfile -ExecutionPolicy Bypass "& {& '%~dp0ps-check-for-github-repo-update.ps1' %*}"
+%PWSHELL% -NoProfile -ExecutionPolicy Bypass -Command "& {& '%~dp0ps-check-for-github-repo-update.ps1' %*}"
 )
 exit /b 0
 
@@ -59,6 +64,6 @@ exit /b 0
 if "%optional_vcpkg_dir%" neq "" (
 echo Ignoring '%1' port check since it can't be run locally.
 ) else (
-powershell.exe -NoProfile -ExecutionPolicy Bypass "& {& '%~dp0ps-check-for-github-tag-update.ps1' %*}"
+%PWSHELL% -NoProfile -ExecutionPolicy Bypass -Command "& {& '%~dp0ps-check-for-github-tag-update.ps1' %*}"
 )
 exit /b 0
