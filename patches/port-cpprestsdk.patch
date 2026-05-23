@@ -37,18 +37,18 @@ index 0000000..283792a
 +-#endif //  !defined(CPPREST_EXCLUDE_WEBSOCKETS) || !defined(_WIN32)
 ++#endif //  !defined(_WIN32) || !defined(CPPREST_EXCLUDE_WEBSOCKETS) || defined(CPPREST_FORCE_HTTP_CLIENT_ASIO) || defined(CPPREST_FORCE_HTTP_LISTENER_ASIO)
 diff --git a/portfile.cmake b/portfile.cmake
-index efa1c7f..71c3ba6 100644
+index d9d1c0d..e20aa80 100644
 --- a/portfile.cmake
 +++ b/portfile.cmake
-@@ -11,6 +11,7 @@ vcpkg_from_github(
-         fix-clang-dllimport.patch # workaround for https://github.com/microsoft/cpprestsdk/issues/1710
+@@ -12,6 +12,7 @@ vcpkg_from_github(
          fix-asio-error.patch
          remove-stdext-checked-array-iterator-1836.patch # https://github.com/microsoft/cpprestsdk/pull/1836
-+        my-windows-asio-unresolved-external-fix.patch #my-change: https://github.com/microsoft/cpprestsdk/pull/1466
+         remove-openprot-1844.diff # https://github.com/microsoft/cpprestsdk/pull/1844
++        my-windows-asio-unresolved-external-fix.patch # my-change: https://github.com/microsoft/cpprestsdk/pull/1466
  )
  
  vcpkg_check_features(
-@@ -21,6 +22,14 @@ vcpkg_check_features(
+@@ -22,6 +23,14 @@ vcpkg_check_features(
        websockets CPPREST_EXCLUDE_WEBSOCKETS
  )
  
@@ -64,7 +64,7 @@ index efa1c7f..71c3ba6 100644
      set(configure_opts WINDOWS_USE_MSBUILD)
  endif()
 diff --git a/vcpkg.json b/vcpkg.json
-index 0f76b04..c4f43da 100644
+index 26d3a9e..a8db54d 100644
 --- a/vcpkg.json
 +++ b/vcpkg.json
 @@ -80,6 +80,19 @@
