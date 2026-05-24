@@ -1,6 +1,6 @@
 {
   "name": "cuda-ci",
-  "version-string": "13.2.0-9.20.0",
+  "version-string": "12.9.2-9.22.0",
   "description": "CUDA/CUDNN installer for CI systems; version-string format: cuda_version-cudnn_version",
   "homepage": "https://github.com/NVIDIA/build-system-archive-import-examples",
   "license": "MIT",
