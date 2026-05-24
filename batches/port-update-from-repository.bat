@@ -10,3 +10,5 @@ echo Using %PWSHELL%
 %PWSHELL% -NoProfile -ExecutionPolicy Bypass -Command "& {& '%~dp0ps-update-port-from-repository.ps1' ruy }"
 
 %PWSHELL% -NoProfile -ExecutionPolicy Bypass -Command "& {& '%~dp0ps-update-vcpkg-tool-clang-port.ps1' }"
+
+%PWSHELL% -NoProfile -ExecutionPolicy Bypass -Command "& {& '%~dp0ps-update-cuda-ci-version-from-repository.ps1' }"
