@@ -70,6 +70,8 @@ New feature:
 - **windows-asio**: add 'asio' support to windows platform.  
 It also contains the patch related to my PR <https://github.com/microsoft/cpprestsdk/pull/1466>, not integrated in main 'cpprestsdk' repository yet.
 
+**Note**: cpprestsdk-2.10.19#6 was the last port version available in official vcpkg repository, before being delisted and removed from there.
+
 ### ctranslate2
 
 New port for the "CTranslate2" library from https://github.com/OpenNMT/CTranslate2:  
