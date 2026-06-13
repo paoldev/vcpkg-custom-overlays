@@ -4,7 +4,7 @@ Set-StrictMode -Version Latest
 
 Import-Module '.\VcpkgFunctionsLibrary.psm1'
 
-Function Get−HighestVersion
+Function Get-HighestVersion
 {
 	param ( $url )
 
@@ -59,8 +59,8 @@ $localVersion = $localJson.version
 ($localCudaVersion, $localCudnnVersion) = $localVersion -split '-'
 # Write-Output "Local version is: $localCudaVersion-$localCudnnVersion"
 
-$highestCudaVersion = Get−HighestVersion $CudaUrl
-$highestCudnnVersion = Get−HighestVersion $CudnnUrl
+$highestCudaVersion = Get-HighestVersion $CudaUrl
+$highestCudnnVersion = Get-HighestVersion $CudnnUrl
 $remoteVersion = "$highestCudaVersion-$highestCudnnVersion"
 # Write-Output "The highest version is: $remoteVersion"
 
