@@ -212,6 +212,8 @@ NB: only x64 windows version is downloaded.
 ## Triplets
 
 - x64-uwp-static-md-release
+- x64-windows-static-md-v143
+- x64-windows-v143
 
 # License
 
