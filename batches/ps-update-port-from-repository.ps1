@@ -101,6 +101,7 @@ else
 		$newVersionLine = '"' + $localJson.versiontype + '": "' + $remoteVersionForJson + '",'
 		$vcpkgContent = Get-Content -Path $localVcpkgJson -Raw
 		$vcpkgContent = $vcpkgContent -Replace $oldVersionLine, $newVersionLine
+		$vcpkgContent = $vcpkgContent -Replace '(?m)^(.*)"port-version"(.*),\r?\n?', ''
 		Set-Content -Path $localVcpkgJson -Value $vcpkgContent -NoNewLine
 					
 		Write-Host "Port updated:`n`tversion $($remoteVersionForJson)`n`tsha512 $($hash512.Hash.ToLower())."

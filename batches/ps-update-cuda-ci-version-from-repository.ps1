@@ -88,6 +88,7 @@ if (($highestCudaVersion -gt $localCudaVersion) -or ($highestCudnnVersion -gt $l
 		$newVersionLine = '"version-string": "' + $remoteVersion + '",'
 		$vcpkgContent = Get-Content -Path $localVcpkgJson -Raw
 		$vcpkgContent = $vcpkgContent -Replace '"version-string"(.*),', $newVersionLine
+		$vcpkgContent = $vcpkgContent -Replace '(?m)^(.*)"port-version"(.*),\r?\n?', ''
 		Set-Content -Path $localVcpkgJson -Value $vcpkgContent -NoNewLine
 
 		Write-Host "Port updated:`n`tversion $($remoteVersion)`n`tcuda sha512 $($cudaHash512.Hash.ToLower())`n`tcudnn sha512 $($cudnnHash512.Hash.ToLower())."
