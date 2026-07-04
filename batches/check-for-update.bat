@@ -20,6 +20,7 @@ echo.
 
 call :check_vcpkg cairo %optional_vcpkg_dir%
 call :check_vcpkg cuda %optional_vcpkg_dir%
+call :check_vcpkg cudnn %optional_vcpkg_dir%
 call :check_vcpkg icu %optional_vcpkg_dir%
 call :check_vcpkg intel-mkl %optional_vcpkg_dir%
 call :check_vcpkg libpsl %optional_vcpkg_dir%

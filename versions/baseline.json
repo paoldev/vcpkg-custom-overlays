@@ -24,6 +24,10 @@
       "baseline": "12.9.2-9.22.0",
       "port-version": 1
     },
+    "cudnn": {
+      "baseline": "7.6.5",
+      "port-version": 17
+    },
     "icu": {
       "baseline": "78.3",
       "port-version": 1
