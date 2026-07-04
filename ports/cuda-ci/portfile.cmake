@@ -38,7 +38,7 @@ set(CUDA_MANIFEST_HASH 93797ace7fbe4ee2d6ee0025f2393a2bd02605e53af19c20b11fc5dc7
 set(CUDNN_MANIFEST_HASH 72d4e4342966e06271ea0e92b7053ea46677372b983f0ef6d21e65377ae120c51247fd1048b2846219eadf5626bddfcd1511dfd9d41f329ddd1d498943a1cd8f)
 
 # Components' hashes are automatically validated by the py installer through the downloaded manifests.
-set(CUDA_COMPONENTS --component "cuda_cccl,cuda_compat,cuda_crt,ctadvisor,cuda_cudart,cuda_culibos,cuobjdump,cuda_cupti,cuda_cuxxfilt,cuda_nvcc,cuda_nvdisasm,cuda_nvml_dev,cuda_nvprune,cuda_nvrtc,cuda_nvtx,cuda_opencl,cuda_profiler_api,cuda_sandbox_dev,cuda_sanitizer_api,cuda_tileiras,libcublas,libcudla,libcufft,libcufile,libcuobjclient,libcurand,libcusolver,libcusparse,libnpp,libnvfatbin,libnvjitlink,libnvjpeg,libnvptxcompiler,libnvvm,nvidia_fs")
+set(CUDA_COMPONENTS --component "cuda_cccl,cuda_compat,cuda_crt,ctadvisor,cuda_cudart,cuda_culibos,cuobjdump,cuda_cupti,cuda_cuxxfilt,cuda_nvcc,cuda_nvdisasm,cuda_nvml_dev,cuda_nvprune,cuda_nvrtc,cuda_nvtx,cuda_opencl,cuda_profiler_api,cuda_sandbox_dev,cuda_sanitizer_api,cuda_tileiras,libcublas,libcudla,libcufft,libcufile,libcuobjclient,libcurand,libcusolver,libcusparse,libnpp,libnvfatbin,libnvjitlink,libnvjpeg,libnvptxcompiler,libnvvm,nvidia_fs,visual_studio_integration")
 set(CUDNN_COMPONENTS --component "cudnn,cudnn_jit")
 
 # Configurable options: end
@@ -181,6 +181,12 @@ if((NOT NVCC) OR REINSTALL)
         message(FATAL_ERROR "Failed to fetch cuda ${CUDA_VERSION} for ${CUDA_OS}-${CUDA_ARCH}.")
     endif()
     file(RENAME "${CUDA_CI_CUSTOM_DIR}/LICENSE" "${CUDA_CI_CUSTOM_DIR}/LICENSE-CUDA")
+    # Move "visual_studio_integration" files to be compatible with
+    # CMAKE_VS_PLATFORM_TOOLSET_CUDA_CUSTOM_DIR used in cmake "Modules\CMakeDetermineCompilerId.cmake"
+    if(EXISTS "${CUDA_CI_CUSTOM_DIR}/visual_studio_integration")
+        file(MAKE_DIRECTORY "${CUDA_CI_CUSTOM_DIR}/extras")
+        file(RENAME "${CUDA_CI_CUSTOM_DIR}/visual_studio_integration" "${CUDA_CI_CUSTOM_DIR}/extras/visual_studio_integration")
+    endif()
     # cuda - end
 
     # cudnn - begin
