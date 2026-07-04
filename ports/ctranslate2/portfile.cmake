@@ -3,7 +3,7 @@ vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO OpenNMT/CTranslate2
     REF v${VERSION}
-    SHA512 5254ec56a63e9537fa60c8fda9684c0f042b69099a959c273dc965cd349fa88f33c277102c153487bfc240a3296d4323e53032e543f93c6aeb96a4cc84fab8c2
+    SHA512 60d80a9c5c7abb4888b1dfcf1ee6da72b213b57ef80c6c42c3e65e65568f4a57d5007eabebd31f36b5c6b7beb048e825a1b11adf34a90862ce7e6b401b20fd49
     HEAD_REF master
     PATCHES
         fix-dependencies.patch
