@@ -65,10 +65,14 @@ elseif(VCPKG_TARGET_IS_LINUX)
     endif()
 endif()
 
-# Keep this path in sync with the one declared in 'ports/cuda/vcpkg_find_cuda.cmake'
-set(CUDA_CI_CUSTOM_DIR "${DOWNLOADS}/tools/cuda/${CUDA_VERSION}/${CUDA_OS}-${CUDA_ARCH}")
+# Keep this path in sync with the one declared in 'ports/cuda-ci/vcpkg-port-config.cmake'
+# Escaping is required to suppress "warning: There should be no absolute paths, such as the following, 
+# in an installed package.To suppress this message, add set(VCPKG_POLICY_SKIP_ABSOLUTE_PATHS_CHECK enabled)"
+set(CUDA_CI_CUSTOM_DIR_ESCAPED "\${DOWNLOADS}/tools/cuda/${CUDA_VERSION}/${CUDA_OS}-${CUDA_ARCH}")
+string(REPLACE "\${DOWNLOADS}" "${DOWNLOADS}" CUDA_CI_CUSTOM_DIR "${CUDA_CI_CUSTOM_DIR_ESCAPED}")
 
 # Check for system installation
+# See vcpkg_find_cuda.cmake
 set(CUDA_PATHS
         ENV CUDA_PATH
         ENV CUDA_HOME
@@ -209,6 +213,8 @@ if((NOT NVCC) OR REINSTALL)
     endif()
     # cudnn - end
 endif()
+
+configure_file("${CMAKE_CURRENT_LIST_DIR}/vcpkg-port-config.cmake" "${CURRENT_PACKAGES_DIR}/share/${PORT}/vcpkg-port-config.cmake" @ONLY)
 
 vcpkg_install_copyright(FILE_LIST
     "${CUDA_CI_CUSTOM_DIR}/LICENSE-CUDA"

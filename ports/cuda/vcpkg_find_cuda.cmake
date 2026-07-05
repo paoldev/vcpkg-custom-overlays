@@ -7,40 +7,13 @@ function(vcpkg_find_cuda)
 
     set(CUDA_REQUIRED_VERSION "10.1.0")
 
-    #my-change - begin
-    if(VCPKG_TARGET_IS_WINDOWS AND (VCPKG_TARGET_ARCHITECTURE STREQUAL "x64"))
-        set(CUDA_OS windows)
-        set(CUDA_ARCH x86_64)
-    elseif(VCPKG_TARGET_IS_LINUX)
-        set(CUDA_OS linux)
-        if(VCPKG_TARGET_ARCHITECTURE STREQUAL "x64")
-            set(CUDA_ARCH x86_64)
-        elseif(VCPKG_TARGET_ARCHITECTURE STREQUAL "arm64")
-            set(CUDA_ARCH sbsa)
-        endif()
-    endif()
-    # Find cuda custom directory with highest version.
-    # Keep this path in sync with the one declared in 'ports/cuda-ci/portfile.cmake'.
-    file(GLOB custom_paths "${DOWNLOADS}/tools/cuda/*/${CUDA_OS}-${CUDA_ARCH}")
-    set(CUDA_CI_CUSTOM_DIR )
-    set(CUDA_MIN_VERSION CUDA_REQUIRED_VERSION)
-    foreach (cuda_path ${custom_paths})
-        string(REGEX MATCH "${DOWNLOADS}/tools/cuda/([0-9]+\\.[0-9]+\\.[0-9]+)/${CUDA_OS}-${CUDA_ARCH}" cuda_version ${cuda_path})
-        if (IS_DIRECTORY ${cuda_path} AND CMAKE_MATCH_1)
-            if (${CMAKE_MATCH_1} VERSION_GREATER_EQUAL CUDA_MIN_VERSION)
-                set(CUDA_CI_CUSTOM_DIR ${cuda_path})
-                set(CUDA_MIN_VERSION ${CMAKE_MATCH_1})
-            endif()
-        endif()
-    endforeach()
-    #my-change - end
-
     set(CUDA_PATHS
+            "${Z_VCPKG_CUDA_CI_CUSTOM_DIR}" #my-change: included and used by 'cuda' portfile.cmake during configuration phase
+            "@Z_VCPKG_CUDA_CI_CUSTOM_DIR_ESCAPED@"  #my-change: used by other ports, such as cudnn and nvidia-cutlass
             ENV CUDA_PATH
             ENV CUDA_HOME
             ENV CUDA_BIN_PATH
-            ENV CUDA_TOOLKIT_ROOT_DIR
-            ${CUDA_CI_CUSTOM_DIR})    #my-change
+            ENV CUDA_TOOLKIT_ROOT_DIR)
 
     if (VCPKG_TARGET_IS_WINDOWS)
         find_program(NVCC
@@ -121,4 +94,12 @@ function(vcpkg_find_cuda)
     if(DEFINED vfc_OUT_CUDA_VERSION)
         set(${vfc_OUT_CUDA_VERSION} "${CUDA_VERSION_MAJOR_MINOR}" PARENT_SCOPE)
     endif()
+    #my-change: begin
+    #export ENV{CUDA_TOOLKIT_ROOT_DIR} to fix "FindCUDNN" used by nvidia-cutlass, because
+    #'nvidia-cutlass' uses ${cuda_toolkit_root} instead of ${CUDA_TOOLKIT_ROOT} to find 'cuda' and
+    #then it fails looking for 'cudnn' in a clean environment, without a "real" cuda installation.
+    if(NOT DEFINED ENV{CUDA_TOOLKIT_ROOT_DIR})
+        set(ENV{CUDA_TOOLKIT_ROOT_DIR} "${CUDA_TOOLKIT_ROOT}")
+    endif()
+    #my-change: end
 endfunction()

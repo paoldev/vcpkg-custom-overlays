@@ -82,12 +82,11 @@ This library is released under the "MIT" license: https://github.com/OpenNMT/CTr
 
 For details, see the links above.
 
-### cuda-ci, cuda and cudnn
+### cuda-ci and cuda
 
 New port to install CUDA and CUDNN for CI systems.  
   
-- 'cuda' port now depends on 'cuda-ci'.  
-- 'cudnn' port: FindCUDNN.cmake now looks for $\{cuda_toolkit_root\} too, to fix some ports, such as 'nvidia-cutlass', dependent on 'cudnn' and $\{cuda_toolkit_root\}, that otherwise wouldn't build on CI systems where 'cuda' is locally installed via 'cuda-ci'. This port override may be removed once such ports will use $\{CUDA_TOOLKIT_ROOT\} instead of $\{cuda_toolkit_root\}.  
+- 'cuda' port now depends on 'cuda-ci' and it may export \$ENV\{CUDA_TOOLKIT_ROOT_DIR\} environment variable to fix 'nvidia-cutlass' port, that fails to find 'cudnn' in a clean environment, where a "real" cuda installation doesn't exist, because that port uses \$\{cuda_toolkit_root\} instead of \$\{CUDA_TOOLKIT_ROOT\} variable to detect 'cuda' path.  
 
 ### icu
 

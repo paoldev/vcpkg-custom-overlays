@@ -9,7 +9,7 @@ include("${CMAKE_CURRENT_LIST_DIR}/vcpkg_find_cuda.cmake")
 vcpkg_find_cuda(OUT_CUDA_TOOLKIT_ROOT CUDA_TOOLKIT_ROOT)
 
 file(COPY "${CMAKE_CURRENT_LIST_DIR}/vcpkg-port-config.cmake" DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}")
-file(COPY "${CMAKE_CURRENT_LIST_DIR}/vcpkg_find_cuda.cmake" DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}")
+configure_file("${CMAKE_CURRENT_LIST_DIR}/vcpkg_find_cuda.cmake" "${CURRENT_PACKAGES_DIR}/share/${PORT}/vcpkg_find_cuda.cmake" @ONLY)  #my-change
 file(INSTALL "${VCPKG_ROOT_DIR}/LICENSE.txt" DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}" RENAME copyright)
 
 set(VCPKG_POLICY_CMAKE_HELPER_PORT enabled)
