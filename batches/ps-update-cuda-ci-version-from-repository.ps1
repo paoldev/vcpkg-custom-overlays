@@ -1,5 +1,7 @@
 [CmdletBinding()]
-Param()
+Param(
+	[switch]$CheckOnly = $false
+)
 Set-StrictMode -Version Latest
 
 Import-Module '.\VcpkgFunctionsLibrary.psm1'
@@ -13,10 +15,12 @@ Function Get-HighestVersion
 	$hrefs = [regex]::Matches($html.Content, 'href=[''"]redistrib_(\d+\.\d+\.\d+(\.\d+)?)\.json[''"]')
 
 	$versions = foreach ($href in $hrefs) { [version]::Parse($href.Groups[1].Value) }
+	
+	$sortedVersions = $versions | Sort-Object -Descending
 
-	$highestVersion = $versions | Sort-Object -Descending | Select-Object -First 1
+	$highestVersion = $sortedVersions | Select-Object -First 1
 
-	return $highestVersion
+	return ($highestVersion, $sortedVersions)
 }
 
 Function Get-SHA512
@@ -59,39 +63,70 @@ $localVersion = $localJson.version
 ($localCudaVersion, $localCudnnVersion) = $localVersion -split '-'
 # Write-Output "Local version is: $localCudaVersion-$localCudnnVersion"
 
-$highestCudaVersion = Get-HighestVersion $CudaUrl
-$highestCudnnVersion = Get-HighestVersion $CudnnUrl
+($highestCudaVersion, $cudaVersions) = Get-HighestVersion $CudaUrl
+($highestCudnnVersion, $cudnnVersions) = Get-HighestVersion $CudnnUrl
 $remoteVersion = "$highestCudaVersion-$highestCudnnVersion"
 # Write-Output "The highest version is: $remoteVersion"
 
 if (($highestCudaVersion -gt $localCudaVersion) -or ($highestCudnnVersion -gt $localCudnnVersion))
 {
-	Write-Warning "$($portName): different versions: local $($localVersion) - remote $($remoteVersion)"
-	
-	$choice = Read-Host "Update port to version $($remoteVersion)? (y/n)"
-	if ($choice -ieq "y")
+	if ($CheckOnly)
 	{
-		# Always download both files.
-		$cudaAssetName = "redistrib_$($highestCudaVersion).json";
-		$cudnnAssetName = "redistrib_$($highestCudnnVersion).json";
+		Write-Warning "$($portName): different versions: local $($localVersion) - remote $($remoteVersion) - Update needed?"
+	}
+	else
+	{
+		Write-Warning "$($portName): different versions: local $($localVersion) - remote $($remoteVersion)"
+		
+		$choice = Read-Host "Update port to version $($remoteVersion)? (y/n)"
+		if ($choice -ieq "n")
+		{
+			# Try to update the port, preserving the cuda major version
+			$localCudaMajorVersion = ([version]$localCudaVersion).Major
+			foreach ($remoteCudaVersion in $cudaVersions)
+			{
+				$remoteCudaMajorVersion = ([version]$remoteCudaVersion).Major
+				if ($remoteCudaMajorVersion -eq $localCudaMajorVersion)
+				{
+					if (($remoteCudaVersion -gt $localCudaVersion) -or
+						(($remoteCudaVersion -eq $localCudaVersion) -and ($highestCudnnVersion -gt $localCudnnVersion)))
+					{
+						$highestCudaVersion = $remoteCudaVersion
+						$remoteVersion = "$highestCudaVersion-$highestCudnnVersion"
+						$choice = Read-Host "Update port to version $($remoteVersion)? (y/n)"
+					}
+					break;
+				}
+				elseif ($remoteCudaMajorVersion -lt $localCudaMajorVersion)
+				{
+					break;
+				}
+			}
+		}
+		if ($choice -ieq "y")
+		{
+			# Always download both files.
+			$cudaAssetName = "redistrib_$($highestCudaVersion).json";
+			$cudnnAssetName = "redistrib_$($highestCudnnVersion).json";
 
-		$cudaHash512 = Get-SHA512 $CudaUrl $cudaAssetName
-		$cudnnHash512 = Get-SHA512 $CudnnUrl $cudnnAssetName
+			$cudaHash512 = Get-SHA512 $CudaUrl $cudaAssetName
+			$cudnnHash512 = Get-SHA512 $CudnnUrl $cudnnAssetName
 
-		$cudaHashLine = "set(CUDA_MANIFEST_HASH $($cudaHash512.Hash.ToLower()))"
-		$cudnnHashLine = "set(CUDNN_MANIFEST_HASH $($cudnnHash512.Hash.ToLower()))"
-		$cmakeContent = Get-Content -Path $localCmakeFile -Raw
-		$cmakeContent = $cmakeContent -Replace 'set\(CUDA_MANIFEST_HASH(.*)\)', $cudaHashLine
-		$cmakeContent = $cmakeContent -Replace 'set\(CUDNN_MANIFEST_HASH(.*)\)', $cudnnHashLine
-		Set-Content -Path $localCmakeFile -Value $cmakeContent -NoNewLine
+			$cudaHashLine = "set(CUDA_MANIFEST_HASH $($cudaHash512.Hash.ToLower()))"
+			$cudnnHashLine = "set(CUDNN_MANIFEST_HASH $($cudnnHash512.Hash.ToLower()))"
+			$cmakeContent = Get-Content -Path $localCmakeFile -Raw
+			$cmakeContent = $cmakeContent -Replace 'set\(CUDA_MANIFEST_HASH(.*)\)', $cudaHashLine
+			$cmakeContent = $cmakeContent -Replace 'set\(CUDNN_MANIFEST_HASH(.*)\)', $cudnnHashLine
+			Set-Content -Path $localCmakeFile -Value $cmakeContent -NoNewLine
 
-		$newVersionLine = '"version-string": "' + $remoteVersion + '",'
-		$vcpkgContent = Get-Content -Path $localVcpkgJson -Raw
-		$vcpkgContent = $vcpkgContent -Replace '"version-string"(.*),', $newVersionLine
-		$vcpkgContent = $vcpkgContent -Replace '(?m)^(.*)"port-version"(.*),\r?\n?', ''
-		Set-Content -Path $localVcpkgJson -Value $vcpkgContent -NoNewLine
+			$newVersionLine = '"version-string": "' + $remoteVersion + '",'
+			$vcpkgContent = Get-Content -Path $localVcpkgJson -Raw
+			$vcpkgContent = $vcpkgContent -Replace '"version-string"(.*),', $newVersionLine
+			$vcpkgContent = $vcpkgContent -Replace '(?m)^(.*)"port-version"(.*),\r?\n?', ''
+			Set-Content -Path $localVcpkgJson -Value $vcpkgContent -NoNewLine
 
-		Write-Host "Port updated:`n`tversion $($remoteVersion)`n`tcuda sha512 $($cudaHash512.Hash.ToLower())`n`tcudnn sha512 $($cudnnHash512.Hash.ToLower())."
+			Write-Host "Port updated:`n`tversion $($remoteVersion)`n`tcuda sha512 $($cudaHash512.Hash.ToLower())`n`tcudnn sha512 $($cudnnHash512.Hash.ToLower())."
+		}
 	}
 }
 elseif (($highestCudaVersion -eq $localCudaVersion) -and ($highestCudnnVersion -eq $localCudnnVersion))

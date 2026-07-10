@@ -43,6 +43,12 @@ rem Add overrideRepo parameter string (such as 'repoowner/reponame') if vcpkg.js
 rem call :check_github_tag vcpkg-tool-clang 'llvmorg-${version}' 'llvm/llvm-project'
 call :check_github_tag vcpkg-tool-clang 'llvmorg-${version}'
 
+echo.
+echo Check 'cuda-ci' port against its latest github repository versions
+echo.
+
+call :check_cuda
+
 popd
 
 goto :eof
@@ -64,5 +70,13 @@ if "%optional_vcpkg_dir%" neq "" (
 echo Ignoring '%1' port check since it can't be run locally.
 ) else (
 %PWSHELL% -NoProfile -ExecutionPolicy Bypass -Command "& {& '%~dp0ps-check-for-github-tag-update.ps1' %*}"
+)
+exit /b 0
+
+:check_cuda
+if "%optional_vcpkg_dir%" neq "" (
+echo Ignoring 'cuda-ci' port check since it can't be run locally.
+) else (
+%PWSHELL% -NoProfile -ExecutionPolicy Bypass -Command "& {& '%~dp0ps-update-cuda-ci-version-from-repository.ps1' -CheckOnly}"
 )
 exit /b 0
