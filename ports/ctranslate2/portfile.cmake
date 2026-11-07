@@ -3,7 +3,7 @@ vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO OpenNMT/CTranslate2
     REF v${VERSION}
-    SHA512 60d80a9c5c7abb4888b1dfcf1ee6da72b213b57ef80c6c42c3e65e65568f4a57d5007eabebd31f36b5c6b7beb048e825a1b11adf34a90862ce7e6b401b20fd49
+    SHA512 2a6f1ed0cc8d0980a89b564f6a3df86c194383c75138ef50ed18885c625e69132e1599e674d955e30e3ebe6027183886b3c58b6d0bd75f4995be59d826f4fa27
     HEAD_REF master
     PATCHES
         fix-dependencies.patch
@@ -43,7 +43,9 @@ set(OPENMP_RUNTIME "NONE")  #todo: create feature?
 if (WITH_MKL AND (VCPKG_CRT_LINKAGE STREQUAL "dynamic"))	# see intel-mkl/portfile.cmake and ctranslate2/CMakeLists.txt
     set(OPENMP_RUNTIME "INTEL")
 else()
-    set(OPENMP_RUNTIME "COMP") # force "openmp=comp", to avoid dead-lock when destroying thread_local thread_pool in parallel.cc if "openmp=none".
+    # "openmp=comp" was "forced" to avoid dead-lock when destroying thread_local thread_pool in parallel.cc if "openmp=none",
+    # but this issue should have been fixed in 4.8.3 version.
+    set(OPENMP_RUNTIME "COMP")
 endif()
 
 if (WITH_MKL)
