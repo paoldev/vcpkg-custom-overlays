@@ -1,14 +1,14 @@
 diff --git a/my-uwp-support.patch b/my-uwp-support.patch
 new file mode 100644
-index 0000000..3419b2a
+index 0000000..8ed9438
 --- /dev/null
 +++ b/my-uwp-support.patch
-@@ -0,0 +1,60 @@
+@@ -0,0 +1,173 @@
 +diff --git a/meson.build b/meson.build
-+index cc13180..4b1a2e6 100644
++index 600cdf9..0dd3b8f 100644
 +--- a/meson.build
 ++++ b/meson.build
-+@@ -484,11 +484,18 @@ if host_machine.system() == 'darwin' and not get_option('quartz').disabled()
++@@ -501,11 +501,18 @@ if host_machine.system() == 'darwin' and not get_option('quartz').disabled()
 +   endif
 + endif
 + 
@@ -21,55 +21,168 @@ index 0000000..3419b2a
 ++  winapi_family = cc.get_define('WINAPI_FAMILY')
 ++  is_uwp = ['WINAPI_FAMILY_APP', 'WINAPI_FAMILY_PC_APP', '2'].contains(winapi_family)
 ++  is_win32 = not is_uwp
-++  
+++
 ++  # When compiling cairo for 'uwp', remove 'win32' stuff.
-++  if is_win32
+++  if is_win32  
 +   win32_extra_deps = [
 +     cc.find_library('gdi32'),
 +     cc.find_library('msimg32'),
-+@@ -511,6 +518,7 @@ if host_machine.system() == 'windows'
++@@ -528,10 +535,14 @@ if host_machine.system() == 'windows'
 +       'deps': win32_extra_deps,
 +     }
 +   ]
 ++  endif
 + 
 +   cpp_compiler = meson.get_compiler('cpp')
-+   d2d_dep = cpp_compiler.find_library('d2d1', required: get_option('dwrite'))
-+@@ -521,7 +529,10 @@ if host_machine.system() == 'windows'
-+   wincodec_dep = cpp_compiler.find_library('windowscodecs', required: get_option('dwrite'))
-+   wincodec_header = cpp_compiler.has_header('wincodec.h')
 + 
-+-  if d2d_dep.found() and dwrite_dep.found() and d2d_header and dwrite_header and wincodec_dep.found() and wincodec_header
++-  if get_option('dwrite').allowed()
 ++  # TODO: dwrite should be supported in uwp mode
 ++  if is_uwp
-++    add_project_arguments('-DWINVER=_WIN32_WINNT_WIN10', '-D_WIN32_WINNT=_WIN32_WINNT_WIN10', '-DNTDDI_VERSION=NTDDI_WIN10_RS3', language: ['c', 'cpp'])
-++  elif d2d_dep.found() and dwrite_dep.found() and d2d_header and dwrite_header and wincodec_dep.found() and wincodec_header
-+     feature_conf.set('CAIRO_HAS_DWRITE_FONT', 1)
-+     built_features += [{
-+       'name': 'cairo-dwrite-font',
+++    add_project_arguments('-DWINVER=_WIN32_WINNT_WIN10', '-D_WIN32_WINNT=_WIN32_WINNT_WIN10', '-DNTDDI_VERSION=0x0A000010', language: ['c', 'cpp'])
+++  elif get_option('dwrite').allowed()
++     d2d_dep = cpp_compiler.find_library('d2d1')
++     dwrite_dep = cpp_compiler.find_library('dwrite')
++     wincodec_dep = cpp_compiler.find_library('windowscodecs')
++diff --git a/src/cairo-misc.c b/src/cairo-misc.c
++index 59cf76f..5c6ef28 100644
++--- a/src/cairo-misc.c
+++++ b/src/cairo-misc.c
++@@ -1025,13 +1025,15 @@ _cairo_win32_tmpfile (void)
++     if (GetTempFileNameW (path_name, L"cairo_", 0, file_name) == 0)
++ 	return NULL;
++ 
++-    handle = CreateFileW (file_name,
+++    CREATEFILE2_EXTENDED_PARAMETERS params = {};
+++    params.dwSize = sizeof(params);
+++    params.dwFileAttributes = FILE_ATTRIBUTE_NORMAL | FILE_ATTRIBUTE_TEMPORARY;
+++    params.dwFileFlags = FILE_FLAG_DELETE_ON_CLOSE;
+++    handle = CreateFile2 (file_name,
++ 			 GENERIC_READ | GENERIC_WRITE,
++ 			 0,
++-			 NULL,
++ 			 CREATE_ALWAYS,
++-			 FILE_ATTRIBUTE_NORMAL | FILE_FLAG_DELETE_ON_CLOSE,
++-			 NULL);
+++			 &params);
++     if (handle == INVALID_HANDLE_VALUE) {
++ 	DeleteFileW (file_name);
++ 	return NULL;
++diff --git a/src/cairo-win32.h b/src/cairo-win32.h
++index db4cac6..ba6df96 100644
++--- a/src/cairo-win32.h
+++++ b/src/cairo-win32.h
++@@ -109,7 +109,7 @@ cairo_win32_scaled_font_get_device_to_logical (cairo_scaled_font_t *scaled_font,
++ 
++ CAIRO_END_DECLS
++ 
++-#else  /* CAIRO_HAS_WIN32_SURFACE */
+++#elif !defined(WINAPI_FAMILY) || (WINAPI_FAMILY != 2) /* CAIRO_HAS_WIN32_SURFACE */
++ # error Cairo was not compiled with support for the win32 backend
++ #endif /* CAIRO_HAS_WIN32_SURFACE */
++ 
 +diff --git a/src/meson.build b/src/meson.build
-+index ac06ac6..c20e83e 100644
++index 7e71299..3bf55c2 100644
 +--- a/src/meson.build
 ++++ b/src/meson.build
-+@@ -232,6 +232,12 @@ foreach feature: built_features
++@@ -233,6 +233,12 @@ foreach feature: built_features
 +   cairo_headers += cairo_feature_headers.get(source_key, [])
 + endforeach
 + 
 ++if is_uwp
 ++  # When compiling cairo for 'uwp', 'cairo-win32-system.c' file
 ++  # is still required, to correctly initialize Win32 mutexes.
-++  cairo_sources += ['win32/cairo-win32-system.c']
+++  cairo_sources += ['win32/cairo-win32-system.c', 'win32/cairo-win32-thread-data.c']
 ++endif
 ++
 + incsrc = include_directories('.')
 + 
 + cairo_static_args = []
++diff --git a/src/win32/cairo-win32-system.c b/src/win32/cairo-win32-system.c
++index 8f24150..53624af 100644
++--- a/src/win32/cairo-win32-system.c
+++++ b/src/win32/cairo-win32-system.c
++@@ -156,6 +156,7 @@ mta_thread_main (void *user_data)
++ void
++ cairo_win32_ensure_mta (void)
++ {
+++#if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY != 2)
++     if (_cairo_atomic_init_once_enter (&mta.once)) {
++         HMODULE ole32 = _cairo_win32_load_library_from_system32 (L"OLE32.DLL");
++ 
++@@ -199,13 +200,14 @@ cairo_win32_ensure_mta (void)
++ 
++         _cairo_atomic_init_once_leave (&mta.once);
++     }
+++#endif
++ }
++ 
++ static void
++ cairo_win32_mta_finalize (void)
++ {
++     /* Loader-lock-safe */
++-
+++#if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY != 2)
++     if (_cairo_atomic_init_once_check (&mta.once)) {
++         if (mta.mta_usage.cookie_is_set) {
++             void *free_func = mta.mta_usage.pCoDecrementMTAUsage;
++@@ -221,21 +223,26 @@ cairo_win32_mta_finalize (void)
++             CloseHandle (mta.thread);
++         }
++     }
+++#endif
++ }
++ 
++ void
++ cairo_win32_async_stdcall_free (stdcall_free_func_t func, void *data)
++ {
+++#if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY != 2)
++     QueueUserWorkItem (func, data, WT_EXECUTEDEFAULT);
+++#endif
++ }
++ 
++ void
++ cairo_win32_async_com_release (IUnknown *iface_ptr)
++ {
+++#if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY != 2)
++     if (iface_ptr) {
++         QueueUserWorkItem ((void *) iface_ptr->lpVtbl->Release,
++                            iface_ptr, WT_EXECUTEDEFAULT);
++     }
+++#endif
++ }
++ 
++ static void
++@@ -248,7 +255,9 @@ cairo_win32_initialize (void)
++ static void
++ cairo_win32_finalize (void)
++ {
+++#if CAIRO_HAS_DWRITE_FONT
++     cairo_win32_dwrite_finalize ();
+++#endif
++     cairo_win32_thread_data_finalize ();
++     cairo_win32_mta_finalize ();
++     CAIRO_MUTEX_FINALIZE ();
++diff --git a/src/win32/cairo-win32-thread-data.c b/src/win32/cairo-win32-thread-data.c
++index 914144d..399c4d3 100644
++--- a/src/win32/cairo-win32-thread-data.c
+++++ b/src/win32/cairo-win32-thread-data.c
++@@ -103,8 +103,10 @@ thread_data_free (cairo_win32_thread_data_t *data)
++          * thread-exit and our asynchronous delete would be racy. For more
++          * informations, refer to the MSDN docs for CreateCompatibleDC.
++          */
+++#if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY != 2)
++         void *free_func = DeleteDC;
++         cairo_win32_async_stdcall_free (free_func, data->hdc);
+++#endif
++     }
++ 
++ #if CAIRO_HAS_DWRITE_FONT
 diff --git a/portfile.cmake b/portfile.cmake
-index 4da4f24..d2461ef 100644
+index 305feff..ce5a2f6 100644
 --- a/portfile.cmake
 +++ b/portfile.cmake
-@@ -11,6 +11,7 @@ vcpkg_from_gitlab(
-     SHA512 663e6edf2718e8205e30ba309ac609ced9e88e6e1ec857fc48b345dfce82b044d58ec6b4a2d2b281fba30a659a368625ea7501f8b43fe26c137a7ebffdbaac91
+@@ -14,6 +14,7 @@ vcpkg_extract_source_archive(
+     ARCHIVE "${ARCHIVE}"
      PATCHES
          msvc-convenience.diff
 +        my-uwp-support.patch  #my-change: it MUST be applied before 'fix_clang-cl_build.patch'
@@ -77,10 +190,10 @@ index 4da4f24..d2461ef 100644
  )
  
 diff --git a/vcpkg.json b/vcpkg.json
-index 4d45978..6adc332 100644
+index 9281598..5553d95 100644
 --- a/vcpkg.json
 +++ b/vcpkg.json
-@@ -5,7 +5,7 @@
+@@ -4,7 +4,7 @@
    "description": "Cairo is a 2D graphics library with support for multiple output devices. Currently supported output targets include the X Window System (via both Xlib and XCB), Quartz, Win32, image buffers, PostScript, PDF, and SVG file output. Experimental backends include OpenGL, BeOS, OS/2, and DirectFB.",
    "homepage": "https://cairographics.org",
    "license": "LGPL-2.1-only OR MPL-1.1",
@@ -89,7 +202,7 @@ index 4d45978..6adc332 100644
    "dependencies": [
      "dirent",
      "expat",
-@@ -19,12 +19,16 @@
+@@ -18,12 +18,16 @@
      "zlib"
    ],
    "default-features": [
