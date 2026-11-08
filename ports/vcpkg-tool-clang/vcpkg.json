@@ -1,8 +1,15 @@
 {
   "name": "vcpkg-tool-clang",
-  "version": "22.1.8",
+  "version": "23.1.5",
   "description": "The LLVM Project is a collection of modular and reusable compiler and toolchain technologies. Note: the repository does not accept github pull requests at this moment. Please submit your patches at http://reviews.llvm.org. ",
   "homepage": "https://github.com/llvm/llvm-project",
   "license": null,
-  "supports": "windows & x64 & native"
+  "supports": "windows & x64 & native",
+  "dependencies": [
+    {
+      "name": "vcpkg-tool-lessmsi",
+      "host": true,
+      "platform": "windows"
+    }
+  ]
 }

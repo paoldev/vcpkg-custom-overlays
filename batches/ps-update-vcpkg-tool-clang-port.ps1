@@ -38,15 +38,15 @@ else
 	if ($choice -ieq "y")
 	{
 		$found = $false
-		$expectedAssetName="LLVM-$($remoteVersion)-win64.exe"
+		$expectedAssetNames = @("LLVM-$($remoteVersion)-win64.exe", "LLVM-$($remoteVersion)-win64.msi")
 		foreach ($asset in $releaseInfo.assets)
 		{
-			if ($asset.name -eq $expectedAssetName)
+			if ($expectedAssetNames -contains $asset.name)
 			{
 				$found = $true
 
 				$downloadUrl = $asset.download_url
-				$outputPath = Join-Path -Path $PSScriptRoot -ChildPath $expectedAssetName
+				$outputPath = Join-Path -Path $PSScriptRoot -ChildPath $asset.name
 				
 				Write-Host "Downloading $($downloadUrl)"
 
@@ -66,8 +66,11 @@ else
 
 				if (("sha256:"+$hash256.Hash) -ieq $asset.digest)
 				{
+					$assetNameWithGenericVersion = $asset.name -replace '(?<=-).*?(?=-)', '${version}'
+					$newArchiveLine = "set(archive $($assetNameWithGenericVersion))"
 					$newHashLine = "set(hash $($hash512.Hash.ToLower()))"
 					$cmakeContent = Get-Content -Path $localCmakeFile -Raw
+					$cmakeContent = $cmakeContent -Replace 'set\(archive(.*)\)', $newArchiveLine
 					$cmakeContent = $cmakeContent -Replace 'set\(hash(.*)\)', $newHashLine
 					Set-Content -Path $localCmakeFile -Value $cmakeContent -NoNewLine
 					
@@ -91,7 +94,7 @@ else
 		
 		if (-not $found)
 		{
-			Write-Warning "Port not updated: asset $($expectedAssetName) not found."
+			Write-Warning "Port not updated: asset not found in '$($expectedAssetNames)'."
 		}
 	}
 }

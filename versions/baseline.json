@@ -57,7 +57,7 @@
       "port-version": 0
     },
     "vcpkg-tool-clang": {
-      "baseline": "22.1.8",
+      "baseline": "23.1.5",
       "port-version": 0
     }
   }
