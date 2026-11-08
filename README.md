@@ -34,7 +34,6 @@ vcpkg-configuration.json:
 > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"icu",  
 > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"intel-mkl",  
 > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"libpsl",  
-> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"lua",  
 > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"ms-icu",  
 > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"ruy",  
 > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"sentencepiece",  
@@ -117,13 +116,6 @@ Custom libpsl port.
 New features:
 - uwp support
 - optional support for "ms-icu" dependency
-
-### lua
-
-Custom lua port.  
-
-New feature:  
-- export LUA_VERSION_STRING to meson build system.
 
 ### ms-icu
 
