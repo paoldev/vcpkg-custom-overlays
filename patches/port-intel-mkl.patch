@@ -1,8 +1,8 @@
 diff --git a/portfile.cmake b/portfile.cmake
-index a91bcce..d1ffa57 100644
+index 2cb5e92..9925455 100644
 --- a/portfile.cmake
 +++ b/portfile.cmake
-@@ -39,6 +39,19 @@ vcpkg_download_distfile(installer_path
+@@ -38,6 +38,19 @@ vcpkg_download_distfile(installer_path
      SHA512 "${sha}"
  )
  
@@ -12,7 +12,7 @@ index a91bcce..d1ffa57 100644
 +# See https://www.intel.com/content/www/us/en/docs/onemkl/developer-guide-windows/2025-2/linking-with-compiler-run-time-libraries.html for /MT and /MD differences.
 +#	/MT for linking with static Intel® oneAPI Math Kernel Library (oneMKL) libraries
 +#	/MD for linking with dynamic Intel® oneAPI Math Kernel Library (oneMKL) libraries
-+if(VCPKG_TARGET_IS_WINDOWS AND (VCPKG_CRT_LINKAGE STREQUAL "dynamic"))
++if(VCPKG_TARGET_IS_WINDOWS AND (VCPKG_CRT_LINKAGE STREQUAL "dynamic"))  #if crt is /MD, use dynamic MKL, even if VCPKG_LIBRARY_LINKAGE is static
 +    set(MKL_LIBRARY_LINKAGE "dynamic")
 +else()
 +	set(MKL_LIBRARY_LINKAGE ${VCPKG_LIBRARY_LINKAGE})
@@ -22,7 +22,7 @@ index a91bcce..d1ffa57 100644
  # Note: intel_thread and lp64 are the defaults.
  set(interface "ilp64") # or ilp64; ilp == 64 bit int api
  #https://www.intel.com/content/www/us/en/develop/documentation/onemkl-linux-developer-guide/top/linking-your-application-with-onemkl/linking-in-detail/linking-with-interface-libraries/using-the-ilp64-interface-vs-lp64-interface.html
-@@ -52,7 +65,7 @@ if(threading STREQUAL "intel_thread")
+@@ -51,7 +64,7 @@ if(threading STREQUAL "intel_thread")
  else()
      string(SUBSTRING "${threading}" "0" "3" short_thread)
  endif()
@@ -31,7 +31,7 @@ index a91bcce..d1ffa57 100644
  
  # First extraction level: packages (from offline installer)
  set(extract_0_dir "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-extract")
-@@ -128,7 +141,7 @@ vcpkg_execute_required_process(
+@@ -127,7 +140,7 @@ vcpkg_execute_required_process(
  set(mkl_dir "${extract_1_dir}/_installdir/mkl/${mkl_short_version}")
  file(COPY "${mkl_dir}/include/" DESTINATION "${CURRENT_PACKAGES_DIR}/include")
  file(COPY "${mkl_dir}/${package_libdir}/" DESTINATION "${CURRENT_PACKAGES_DIR}/lib/")
@@ -40,7 +40,7 @@ index a91bcce..d1ffa57 100644
    file(COPY "${mkl_dir}/${runtime_dir}/" DESTINATION "${CURRENT_PACKAGES_DIR}/bin/")
  endif()
  
-@@ -138,14 +151,14 @@ vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/lib/pkgconfig/${main_pc_file}" "\$
+@@ -137,14 +150,14 @@ vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/lib/pkgconfig/${main_pc_file}" "\$
  set(compiler_dir "${extract_1_dir}/_installdir/compiler/${mkl_short_version}")
  if(threading STREQUAL "intel_thread")
    file(COPY "${compiler_dir}/lib/" DESTINATION "${CURRENT_PACKAGES_DIR}/lib/")
@@ -57,7 +57,7 @@ index a91bcce..d1ffa57 100644
      set(to_remove_suffix .a)
  else()
    if(VCPKG_TARGET_IS_WINDOWS)
-@@ -177,7 +190,7 @@ endif()
+@@ -176,7 +189,7 @@ endif()
  file(COPY "${mkl_dir}/lib/cmake/" DESTINATION "${CURRENT_PACKAGES_DIR}/share/")
  vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/share/mkl/MKLConfig.cmake" "MKL_CMAKE_PATH}/../../../" "MKL_CMAKE_PATH}/../../")
  vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/share/mkl/MKLConfig.cmake" "redist/\${MKL_ARCH}" "bin")
@@ -66,7 +66,7 @@ index a91bcce..d1ffa57 100644
    vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/share/mkl/MKLConfig.cmake" "set(DEFAULT_MKL_LINK dynamic)" "set(DEFAULT_MKL_LINK static)")
    vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/share/mkl/MKLConfig.cmake" "set(LIB_EXT \".so\")" "set(LIB_EXT \".a\")")
  endif()
-@@ -192,6 +205,7 @@ file(REMOVE_RECURSE
+@@ -191,6 +204,7 @@ file(REMOVE_RECURSE
      "${extract_0_dir}"
      "${extract_1_dir}"
      "${CURRENT_PACKAGES_DIR}/bin/compiler"
